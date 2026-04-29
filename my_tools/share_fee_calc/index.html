@@ -1,0 +1,696 @@
+<!-- ---
+layout: false
+--- -->
+<!-- 正常浏览器渲染不出来 -->
+<!-- 保持原样, 不要套上主题外壳 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A股交易手续费计算器</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 FontAwesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 全局字体设置：中文字符楷体, 英文字符Times New Roman */
+        :root {
+            font-family: 'Times New Roman', 'KaiTi', '楷体', 'STKaiti', serif;
+        }
+
+        .font-sans {
+            /* !importan 优先级最高, 强制覆盖所有字体 */
+            font-family: "Times New Roman", "KaiTi", "楷体" !important;
+        }
+        
+        body {
+            /* 全局字体 */
+            font-family: "Times New Roman", "KaiTi", sans-serif;
+            background-color: #020617; /* slate-950 */
+            color: #e2e8f0; /* slate-200 */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        /* 霓虹发光文字 */
+        .text-glow {
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.7), 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+        
+        /* 盒子内阴影发光 */
+        .box-glow {
+            box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.1), 0 0 20px rgba(239, 68, 68, 0.2);
+        }
+
+        /* 竖向文字修正：正向竖排 */
+        .writing-vertical-upright {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 0.2em;
+            margin: 0 auto;
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(239, 68, 68, 0.3); border-radius: 10px; }
+
+        /* 背景光晕动画 */
+        .bg-glow-red {
+            position: fixed;
+            top: -10%; left: -10%;
+            width: 40vw; height: 40vw;
+            background: rgba(220, 38, 38, 0.15);
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .bg-glow-blue {
+            position: fixed;
+            bottom: -10%; right: -10%;
+            width: 40vw; height: 40vw;
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* 隐藏输入框上下箭头 */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none; margin: 0;
+        }
+
+        /* Toggle 开关样式 */
+        .toggle-checkbox:checked { right: 0; border-color: #ef4444; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #ef4444; }
+        .toggle-checkbox { right: 0; z-index: 1; border-color: #e2e8f0; transition: all 0.3s; }
+        .toggle-label { width: 3rem; height: 1.5rem; background-color: #334155; border-radius: 9999px; transition: all 0.3s; }
+        .toggle-dot { width: 1.25rem; height: 1.25rem; background-color: white; border-radius: 50%; position: absolute; top: 0.125rem; left: 0.125rem; transition: transform 0.3s; }
+        .toggle-checkbox:checked ~ .toggle-dot { transform: translateX(1.5rem); }
+        
+        /* z-index  设置图层顺序, 排在第10层, 保证不被遮住 */
+        /* position 开启相对定位, 让z-index生效  */
+        /* width   宽度占满父容器 */
+        /* 最大宽度不超过 */
+        .main-container { z-index: 10; position: relative; width: 100%; max-width: 100rem; padding: 0 2rem; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow-red"></div>
+    <div class="bg-glow-blue"></div>
+
+    <!-- main-container为自定义类名, 代表主容器 -->
+    <!-- grid 开启CSS网格布局, 把盒子分成多行多列 -->
+    <!-- grid-cols-1 默认, 手机小屏幕只有1列 -->
+    <!-- lg:grid-cols-12 大屏幕, >=1024px, 分成12列网格 -->
+    <!-- gap-8, 列与列之间的间距为8个单位  -->
+    <!-- mb-8, 盒子底部外边距为32px -->
+    <!--  -->
+    <div class="main-container grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        
+        <!-- ================= 左侧：图表信息面板 ================= -->
+        <div class="lg:col-span-7 space-y-6">
+            <div class="text-center md:text-left mb-8">
+                <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600 mb-3 text-glow tracking-widest">
+                    A股交易手续费
+                </h1>
+                <h2 class="text-xl md:text-2xl text-slate-400 tracking-wide" style="font-family: 'KaiTi', 'Times New Roman', serif;">
+                    一笔股票交易的手续费是多少？
+                </h2>
+            </div>
+
+            <div class="bg-slate-900/60 backdrop-blur-xl border border-red-500/30 rounded-2xl overflow-hidden box-glow">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-center border-collapse">
+                        <thead>
+                            <tr class="bg-gradient-to-r from-red-900/80 to-red-800/80 text-red-100 text-lg border-b border-red-500/50">
+                                <th class="p-4 font-normal tracking-widest" colspan="3">收费项目</th>
+                                <th class="p-4 font-normal tracking-widest">费率</th>
+                                <th class="p-4 font-normal tracking-widest">收取方式</th>
+                                <th class="p-4 font-normal tracking-widest">收取方</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm md:text-base text-slate-300 divide-y divide-red-500/20">
+                            <!-- 净佣金 -->
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td rowspan="4" class="p-4 border-r border-red-500/20 text-red-400 font-bold text-lg tracking-widest w-16">
+                                    <div class="writing-vertical-upright">全佣金</div>
+                                </td>
+                                <td colspan="2" class="p-4 border-r border-red-500/20 text-red-300 font-bold">净佣金</td>
+                                <td class="p-4 border-r border-red-500/20">
+                                    <div class="text-red-400 font-bold font-sans">0.15‰-0.3‰</div>
+                                    <div class="text-xs text-slate-500 mt-1">券商自定, 最低5元起收</div>
+                                </td>
+                                <td class="p-4 border-r border-red-500/20">买卖均收</td>
+                                <td class="p-4">证券公司</td>
+                            </tr>
+                            <!-- 规费 - 过户费 -->
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td rowspan="3" class="p-4 border-r border-red-500/20 text-orange-300 font-bold w-12">
+                                    <div class="writing-vertical-upright">规费</div>
+                                </td>
+                                <td class="p-4 border-r border-red-500/20">登记过户费</td>
+                                <td class="p-4 border-r border-red-500/20 text-orange-200 font-sans">0.01‰ (万0.1)</td>
+                                <td class="p-4 border-r border-red-500/20">买卖均收</td>
+                                <td class="p-4 text-xs">中国证券登记结算<br/>有限责任公司<br/><span class="text-slate-500" style="font-family: 'KaiTi', 'Times New Roman', serif;">(证券公司代收)</span></td>
+                            </tr>
+                            <!-- 规费 - 经手费 -->
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="p-4 border-r border-red-500/20">交易经手费</td>
+                                <td class="p-0 border-r border-red-500/20 text-orange-200">
+                                    <div class="p-2 border-b border-red-500/20 text-sm font-sans">0.0341‰ (万0.341)<span class="text-slate-500 text-xs" style="font-family: 'KaiTi', 'Times New Roman', serif;">(沪深证券交易所)</span></div>
+                                    <div class="p-2 text-sm font-sans">0.125‰ (万1.25)<span class="text-slate-500 text-xs" style="font-family: 'KaiTi', 'Times New Roman', serif;">(北京证券交易所)</span></div>
+                                </td>
+                                <td class="p-4 border-r border-red-500/20">买卖均收</td>
+                                <td class="p-4 text-xs">证券交易所<br/><span class="text-slate-500" style="font-family: 'KaiTi', 'Times New Roman', serif;">(证券公司代收)</span></td>
+                            </tr>
+                            <!-- 规费 - 证管费 -->
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="p-4 border-r border-red-500/20">证券证管费</td>
+                                <td class="p-4 border-r border-red-500/20 text-orange-200 font-sans">0.02‰ (万0.2)</td>
+                                <td class="p-4 border-r border-red-500/20">买卖均收</td>
+                                <td class="p-4 text-xs">证监会<br/><span class="text-slate-500" style="font-family: 'KaiTi', 'Times New Roman', serif;">(证券公司代收)</span></td>
+                            </tr>
+                            <!-- 印花税 -->
+                            <tr class="hover:bg-white/5 transition-colors bg-red-950/20">
+                                <td colspan="3" class="p-4 border-r border-red-500/20 text-rose-400 font-bold text-lg tracking-widest">印花税</td>
+                                <td class="p-4 border-r border-red-500/20 text-rose-400 font-bold font-sans">0.5‰ (万5)</td>
+                                <td class="p-4 border-r border-red-500/20 text-rose-400">卖时收取</td>
+                                <td class="p-4 text-rose-300">国家税务部门</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-4 bg-black/40 text-sm text-slate-400 space-y-2 border-t border-red-500/30">
+                    <p><span class="text-red-400">注一：</span>过户费、经手费和证管费合称为“规费”。含规费的佣金叫“全佣金”，不含的叫“净佣金”。</p>
+                    <p><span class="text-red-400">注二：</span>‰，千分比符号，即 1/1000 或 0.1%。</p>
+                    <p><span class="text-red-400">注三：</span>A股、证券投资基金每笔交易佣金不足5元的，按5元收取。</p>
+                    <p><span class="text-red-400">注四：</span>沪市交易全佣金可能不包含过户费，深市全佣可能包含过户费。</p>
+                    <p><span class="text-red-400">注五：</span>ETF经手费为万分之0.4（货币ETF、债券ETF不收取），无过户费、政管费和印花税。</p>
+                    <p><span class="text-red-400">*</span>投资有风险，入市需谨慎。</p>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 右侧：交互式计算器 ================= -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+            <div class="bg-slate-900/80 backdrop-blur-xl border border-slate-700 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-50"></div>
+                
+                <div class="flex items-center gap-3 mb-4">
+                    <i class="fa-solid fa-calculator text-2xl text-red-500"></i>
+                    <h3 class="text-2xl font-bold text-white tracking-widest">交易核算引擎</h3>
+                </div>
+
+                <!-- 计算方式切换 -->
+                <div class="flex bg-black/60 p-1 rounded-lg border border-slate-700/50 mb-2">
+                    <button onclick="setInputMode('amount')" id="btn-mode-amount" class="flex-1 py-1.5 text-sm transition-colors rounded-md bg-slate-700 text-white shadow">按总金额输入</button>
+                    <button onclick="setInputMode('shares')" id="btn-mode-shares" class="flex-1 py-1.5 text-sm transition-colors rounded-md text-slate-400 hover:text-slate-200">按股价与股数</button>
+                </div>
+
+                <div class="space-y-5">
+                    <!-- 输入区域一：单金额输入 -->
+                    <div id="input-amount-container">
+                        <label class="block text-sm text-slate-400 mb-2 tracking-widest">交易总金额 (元)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-yen-sign text-slate-500"></i>
+                            </div>
+                            <input 
+                                type="number" 
+                                id="tradeAmount"
+                                value="10000"
+                                class="w-full bg-black/50 border border-slate-700 rounded-lg py-3 pl-10 pr-4 text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all font-sans text-lg"
+                                placeholder="请输入交易金额"
+                                oninput="calculate()"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- 输入区域二：股价与股数输入 -->
+                    <div id="input-shares-container" class="hidden grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2 tracking-widest">股票单价 (元)</label>
+                            <input 
+                                type="number" 
+                                id="stockPrice"
+                                value="10.00"
+                                class="w-full bg-black/50 border border-slate-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all font-sans text-lg"
+                                oninput="calculate()"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2 tracking-widest">交易数量 (股)</label>
+                            <input 
+                                type="number" 
+                                id="stockShares"
+                                value="1000"
+                                class="w-full bg-black/50 border border-slate-700 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all font-sans text-lg"
+                                oninput="calculate()"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- 动态总金额展示 (仅在选股数时显示) -->
+                    <div id="dynamic-amount-display" class="hidden text-right text-sm text-slate-400 mt-[-10px]">
+                        折合总金额：<span id="computed-total-amount" class="font-sans text-red-400 font-bold">¥ 10000.00</span>
+                    </div>
+
+                    <!-- 交易方向与交易所 -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2 tracking-widest">交易方向</label>
+                            <div class="flex bg-black/50 rounded-lg p-1 border border-slate-800" id="dir-container">
+                                <button onclick="setDir('buy')" id="btn-buy" class="flex-1 py-2 rounded-md text-sm transition-all tracking-widest bg-red-600/20 text-red-400 border border-red-500/50">买入</button>
+                                <button onclick="setDir('sell')" id="btn-sell" class="flex-1 py-2 rounded-md text-sm transition-all tracking-widest text-slate-500 hover:text-slate-300">卖出</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-2 tracking-widest">所属板块</label>
+                            <div class="flex bg-black/50 rounded-lg p-1 border border-slate-800" id="exch-container">
+                                <button onclick="setExch('sh_sz')" id="btn-sh" class="flex-1 py-2 rounded-md text-sm transition-all tracking-widest bg-slate-700 text-white">沪/深</button>
+                                <button onclick="setExch('bse')" id="btn-bse" class="flex-1 py-2 rounded-md text-sm transition-all tracking-widest text-slate-500 hover:text-slate-300">北交所</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 佣金设置 -->
+                    <div class="p-4 rounded-xl border border-red-500/20 bg-red-950/10 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm text-red-300 tracking-widest flex items-center gap-2">
+                                <i class="fa-solid fa-chart-pie"></i> 佣金结构
+                            </label>
+                            <div class="flex bg-black/50 rounded border border-red-900/50">
+                                <!-- 设置佣金结构 -->
+                                <button onclick="setCommType('all')" id="btn-comm-all" class="px-3 py-1 text-xs transition-colors bg-red-800/80 text-white">全佣金</button>
+                                <button onclick="setCommType('net')" id="btn-comm-net" class="px-3 py-1 text-xs transition-colors text-slate-500">净佣金</button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <div class="flex-1 relative">
+                                <input 
+                                    type="number" 
+                                    step="0.01"
+                                    id="commissionRate"
+                                    value="0.0841"
+                                    class="w-full bg-black/50 border border-slate-700 rounded-lg py-2 pl-3 pr-8 text-white focus:outline-none focus:border-red-500 transition-all font-sans"
+                                    oninput="calculate()"
+                                />
+                                <span class="absolute right-3 top-2.5 text-slate-400 font-sans">‰</span>
+                            </div>
+                            
+                            <!-- 免五 Toggle -->
+                            <!-- 这 代码写的太复杂了, 自己根本没法修改 -->
+
+                            <label class="flex items-center gap-2 cursor-pointer text-sm text-slate-300 hover:text-white transition-colors">
+                                <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" id="waiveMin5" onchange="calculate()" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer opacity-0"/>
+                                    <label for="waiveMin5" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-700 cursor-pointer"></label>
+                                    <div class="toggle-dot absolute bg-white shadow pointer-events-none"></div>
+                                </div>
+                                免五特权
+                            </label>
+
+                            <!-- 是否包含过户费 -->
+                            <label class="flex items-center gap-2 cursor-pointer text-sm text-slate-300 hover:text-white transition-colors">
+                                <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" id="includeTransfer" onchange="calculate()" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer opacity-0"/>
+                                    <label for="includeTransfer" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-700 cursor-pointer"></label>
+                                    <div class="toggle-dot absolute bg-white shadow pointer-events-none"></div>
+                                </div>
+                                包含过户费
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 结果展示面板 ================= -->
+            <div class="bg-gradient-to-br from-slate-900 to-black border border-slate-800 rounded-2xl p-6 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                <h3 class="text-slate-400 mb-4 text-sm tracking-widest border-b border-slate-800 pb-2">预计手续费账单</h3>
+                
+                <div class="flex items-end justify-between mb-6">
+                    <div>
+                        <p class="text-slate-500 text-xs mb-1 tracking-widest">总扣费金额 (元)</p>
+                        <div class="text-4xl font-bold text-red-500 font-sans tracking-tight text-glow" id="res-total">
+                            ¥ 0.000
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-slate-500 text-xs mb-1 tracking-widest">综合费率</p>
+                        <div class="text-xl text-slate-300 font-sans" id="res-percent">
+                            0.0000 %
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 费用拆解与计算公式 -->
+                <div class="space-y-3 font-sans">
+                    <!-- 印花税 -->
+                    <div class="flex flex-col bg-slate-800/30 border border-slate-800/50 p-2 rounded gap-1">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-slate-400 flex items-center gap-2 tracking-widest" style="font-family: 'KaiTi', serif;">
+                                <i class="fa-solid fa-building-columns text-rose-400"></i> 印花税
+                                <span id="stamp-badge" class="text-[10px] bg-slate-700 px-1 rounded text-slate-300">买入免收</span>
+                            </span>
+                            <span class="text-rose-400 font-mono text-base" id="res-stamp">¥ 0.000</span>
+                        </div>
+                        <div class="flex justify-between text-[11px] text-slate-500">
+                            <span style="font-family: 'KaiTi', serif;">计算等式：</span>
+                            <span class="font-mono text-rose-500/50" id="formula-stamp"></span>
+                        </div>
+                    </div>
+
+                    <!-- 规费合计 -->
+                    <div class="flex flex-col bg-slate-800/30 border border-slate-800/50 p-2 rounded gap-1">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-slate-400 flex items-center gap-2 tracking-widest" style="font-family: 'KaiTi', serif;">
+                                <i class="fa-solid fa-shield-halved text-orange-400"></i> 规费合计
+                                <span id="reg-badge" class="text-[10px] text-slate-500">(已含在佣金内)</span>
+                            </span>
+                            <span class="text-orange-400 font-mono text-base" id="res-reg">¥ 0.000</span>
+                        </div>
+                        
+                        <!-- 规费细分 -->
+                        <div class="pl-6 text-[11px] text-slate-500 space-y-1 mt-1 border-t border-slate-800/50 pt-1" style="font-family: 'KaiTi', serif;">
+                            <div class="flex justify-between items-center">
+                                <span>过户费</span>
+                                <div class="flex gap-2">
+                                    <span class="font-mono text-slate-600" id="formula-trans"></span>
+                                    <span class="font-sans text-slate-400 w-16 text-right" id="res-trans">¥ 0.000</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>经手费</span>
+                                <div class="flex gap-2">
+                                    <span class="font-mono text-slate-600" id="formula-hand"></span>
+                                    <span class="font-sans text-slate-400 w-16 text-right" id="res-hand">¥ 0.000</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>证管费</span>
+                                <div class="flex gap-2">
+                                    <span class="font-mono text-slate-600" id="formula-sec"></span>
+                                    <span class="font-sans text-slate-400 w-16 text-right" id="res-sec">¥ 0.000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 券商纯佣 -->
+                    <div class="flex flex-col bg-slate-800/30 border border-slate-800/50 p-2 rounded gap-1 mt-2">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-slate-400 flex items-center gap-2 tracking-widest" style="font-family: 'KaiTi', serif;">
+                                <i class="fa-solid fa-bolt text-blue-400"></i> 券商纯佣
+                                <span id="min5-badge" class="hidden text-[10px] bg-red-900/50 text-red-200 px-1 rounded border border-red-700/50">最低5元生效</span>
+                            </span>
+                            <span class="text-blue-400 font-mono text-base" id="res-broker">¥ 0.000</span>
+                        </div>
+                        <div class="flex justify-between text-[11px] text-slate-500">
+                            <span style="font-family: 'KaiTi', serif;">计算等式：</span>
+                            <span class="font-mono text-blue-500/50" id="formula-broker"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部投资哲理 -->
+    <div class="z-10 text-center max-w-4xl px-4 cursor-pointer group" onclick="displayRandomQuote()">
+        <div class="flex justify-center items-center gap-2 text-slate-500 mb-2">
+            <i class="fa-solid fa-leaf text-xs"></i>
+            <span class="text-xs tracking-widest">每日投资哲理 (点击切换)</span>
+            <i class="fa-solid fa-leaf text-xs"></i>
+        </div>
+        <p id="invest-quote" class="text-slate-400 text-sm md:text-base italic transition-colors group-hover:text-red-400" style="font-family: 'KaiTi', serif;">
+            加载中...
+        </p>
+    </div>
+
+    <script>
+        // 全局状态变量
+        let state = {
+            direction: 'buy', // buy, sell
+            exchange: 'sh_sz', // sh_sz, bse
+            commType: 'all', // all, net
+            inputMode: 'amount' // amount, shares
+        };
+
+        // 投资哲理语录库
+        const quotes = [
+            "“别人贪婪我恐惧，别人恐惧我贪婪。” —— 沃伦·巴菲特",
+            "“市场总是充满着不确定性，敬畏市场，保住本金。” —— 乔治·索罗斯",
+            "“买股票就是买公司，寻找伟大的企业并与之共同成长。” —— 彼得·林奇",
+            "“最重要的不是你预测得有多准，而是你对错的时候分别赚了或亏了多少。” —— 斯坦利·德鲁肯米勒",
+            "“投资的第一条准则是不要赔钱；第二条准则是永远不要忘记第一条。” —— 沃伦·巴菲特",
+            "“牛市在绝望中诞生，在怀疑中成长，在乐观中成熟，在狂欢中死亡。” —— 约翰·坦普尔顿",
+            "“风险来自于你不知道自己在做什么。” —— 沃伦·巴菲特",
+            "“如果总是做显而易见或大家都在做的事，你就赚不到钱。” —— 查理·芒格",
+            "“在股票市场上，寻求别人还没有意识到的突变。” —— 乔治·索罗斯",
+            "“不要把所有的鸡蛋放在一个篮子里，但要看好那个篮子。” —— 现代资产组合理论"
+        ];
+
+        // 随机展示名言
+        function displayRandomQuote() {
+            const idx = Math.floor(Math.random() * quotes.length);
+            document.getElementById('invest-quote').innerText = quotes[idx];
+        }
+
+        // 设置输入模式
+        function setInputMode(mode) {
+            state.inputMode = mode;
+            if (mode === 'amount') {
+                document.getElementById('btn-mode-amount').className = 'flex-1 py-1.5 text-sm transition-colors rounded-md bg-slate-700 text-white shadow';
+                document.getElementById('btn-mode-shares').className = 'flex-1 py-1.5 text-sm transition-colors rounded-md text-slate-400 hover:text-slate-200';
+                document.getElementById('input-amount-container').style.display = 'block';
+                document.getElementById('input-shares-container').style.display = 'none';
+                document.getElementById('dynamic-amount-display').style.display = 'none';
+            } else {
+                document.getElementById('btn-mode-shares').className = 'flex-1 py-1.5 text-sm transition-colors rounded-md bg-slate-700 text-white shadow';
+                document.getElementById('btn-mode-amount').className = 'flex-1 py-1.5 text-sm transition-colors rounded-md text-slate-400 hover:text-slate-200';
+                document.getElementById('input-amount-container').style.display = 'none';
+                document.getElementById('input-shares-container').style.display = 'grid';
+                document.getElementById('dynamic-amount-display').style.display = 'block';
+            }
+            calculate();
+        }
+
+        // 设置交易方向
+        function setDir(dir) {
+            state.direction = dir;
+            document.getElementById('btn-buy').className = dir === 'buy' ? 
+                'flex-1 py-2 rounded-md text-sm transition-all tracking-widest bg-red-600/20 text-red-400 border border-red-500/50' : 
+                'flex-1 py-2 rounded-md text-sm transition-all tracking-widest text-slate-500 hover:text-slate-300';
+            document.getElementById('btn-sell').className = dir === 'sell' ? 
+                'flex-1 py-2 rounded-md text-sm transition-all tracking-widest bg-green-600/20 text-green-400 border border-green-500/50' : 
+                'flex-1 py-2 rounded-md text-sm transition-all tracking-widest text-slate-500 hover:text-slate-300';
+            
+            document.getElementById('stamp-badge').style.display = dir === 'buy' ? 'inline' : 'none';
+            calculate();
+        }
+
+        // 设置交易所
+        function setExch(exch) {
+            state.exchange = exch;
+            document.getElementById('btn-sh').className = exch === 'sh_sz' ? 
+                'flex-1 py-2 rounded-md text-sm transition-all tracking-widest bg-slate-700 text-white' : 
+                'flex-1 py-2 rounded-md text-sm transition-all tracking-widest text-slate-500 hover:text-slate-300';
+            document.getElementById('btn-bse').className = exch === 'bse' ? 
+                'flex-1 py-2 rounded-md text-sm transition-all tracking-widest bg-slate-700 text-white' : 
+                'flex-1 py-2 rounded-md text-sm transition-all tracking-widest text-slate-500 hover:text-slate-300';
+            calculate();
+        }
+
+        // 设置佣金类型
+        function setCommType(type) {
+            state.commType = type;
+            // 全佣
+            document.getElementById('btn-comm-all').className = type === 'all' ? 
+                'px-3 py-1 text-xs transition-colors bg-red-800/80 text-white' : 
+                'px-3 py-1 text-xs transition-colors text-slate-500';
+            // 净佣
+            document.getElementById('btn-comm-net').className = type === 'net' ? 
+                'px-3 py-1 text-xs transition-colors bg-red-800/80 text-white' : 
+                'px-3 py-1 text-xs transition-colors text-slate-500';
+            
+            
+            document.getElementById('reg-badge').innerText = type === 'all' ? '(已含在佣金内)' : '(额外收取)';
+            calculate();
+        }
+
+        // 核心计算逻辑
+        function calculate() {
+            let amount = 0;
+            
+            // 判断金额获取来源
+            if (state.inputMode === 'amount') {
+                amount = parseFloat(document.getElementById('tradeAmount').value) || 0;
+            } else {
+                const price = parseFloat(document.getElementById('stockPrice').value) || 0;
+                const shares = parseFloat(document.getElementById('stockShares').value) || 0;
+                amount = price * shares;
+                document.getElementById('computed-total-amount').innerText = '¥ ' + amount.toFixed(2);
+            }
+
+
+            const rateStr = document.getElementById('commissionRate').value;
+            const rate = parseFloat(rateStr) || 0;
+
+            /* 免五是否勾选 */
+            const waiveMin5 = document.getElementById('waiveMin5').checked;
+
+            // 安全获取包含过户费的勾选状态, 防止未定义报错
+            const includeTransferBox = document.getElementById('includeTransfer');
+            const includeTransfer = includeTransferBox ? includeTransferBox.checked : true;
+
+            const amtStr = amount.toFixed(2);
+
+            // 1. 印花税 (卖出 0.5‰)
+            let stamp = 0;
+            let stampFormula = "免收";
+            if (state.direction === 'sell') {
+                stamp = amount * 0.0005;
+                stampFormula = `${amtStr} × 0.5‰ =`;
+            }
+
+            // 2. 规费三项
+            const transferRate = 0.00001; // 0.01‰
+            const handlingRate = state.exchange === 'sh_sz' ? 0.0000341 : 0.000125; // 经手费率
+            const secMgmtRate = 0.00002; // 0.02‰
+            
+            const transfer = amount * transferRate;                 /* 过户费 */
+            const handling = amount * handlingRate;                 /* 经手费 */
+            const secMgmt = amount * secMgmtRate; 
+            const regFee = transfer + handling + secMgmt;
+
+            // 规费公式组装
+            document.getElementById('formula-trans').innerText = `${amtStr} × 0.01‰ =`;
+            document.getElementById('formula-hand').innerText = `${amtStr} × ${(handlingRate * 1000).toFixed(4)}‰ =`;
+            document.getElementById('formula-sec').innerText = `${amtStr} × 0.02‰ =`;
+
+            // 3. 券商佣金计算
+            let baseCommission = amount * (rate / 1000);
+            let finalBrokerComm = 0;
+            let actualTotalFee = 0;
+            let isMin5Triggered = false;
+            let brokerFormula = "";
+
+            const rawBaseFormula = `${amtStr} × ${rate}‰`;
+
+            /* 动态设置规费提示文字 */
+            let regBadgeText = "";
+
+
+            // 判断如果是净佣金
+            if (state.commType === 'net') {
+                
+                // 免五勾选, 则选择baseCommission.
+                // 不足五元按照五元收取, 在交割单上, 这个5元的门槛是【净佣金 + 经手费 + 证管费】的总和, 有可能包含过户费
+                const baseNetAndReg = baseCommission + handling + secMgmt;
+                const actualCommAndReg = waiveMin5 ? baseNetAndReg : Math.max(5, baseNetAndReg);
+
+                
+                /* 包含过户费 */
+                if (includeTransfer) {
+                    regBadgeText = "(额外收取)";
+                    // 如果勾选包含过户费, 那么过户费也一起算进5元门槛的保护壳内
+                    const baseNetAndAllReg = baseCommission + handling + secMgmt + transfer;
+                    const actualCommAndAllReg = waiveMin5 ? baseNetAndAllReg : Math.max(5, baseNetAndAllReg);
+                    
+                    // 实际的费用, 总费用 = 净佣金 + 完整的规费三项 + 印花税
+                    actualTotalFee = actualCommAndAllReg + stamp;
+                    finalBrokerComm = actualCommAndAllReg; // 界面上显示的“券商佣金及规费”项
+
+                    if (!waiveMin5 && baseNetAndAllReg < 5 && baseNetAndAllReg > 0) {
+                        isMin5Triggered = true;
+                        brokerFormula = `Max(5, 净佣+全规费) =`;
+                    } else {
+                        brokerFormula = `净佣+全规费 =`;
+                    }
+
+                } else {
+                    regBadgeText = "(额外收取, 过户费另算)";
+                    // 不含过户费：总费用 = 净佣金 + 规费两项(经手+证管) + 过户费(另外加) + 印花税
+                    actualTotalFee = actualCommAndReg + transfer + stamp;
+                    finalBrokerComm = actualCommAndReg;
+
+                    if (!waiveMin5 && baseNetAndReg < 5 && baseNetAndReg > 0) {
+                        isMin5Triggered = true;
+                        brokerFormula = `Max(5, 净佣+规费) =`;
+                    } else {
+                        brokerFormula = `净佣+规费 =`;
+                    }
+                }
+
+                
+
+            } else {
+                // 全佣金
+                const allComm = waiveMin5 ? baseCommission : Math.max(5, baseCommission);
+
+                /* 过户费是否收取 */
+                if (includeTransfer) {
+                    regBadgeText = "(已含在佣金内)";
+                    /* 券商要上交三项规费 */
+                    finalBrokerComm = allComm - regFee; 
+                    actualTotalFee = allComm + stamp;
+                } else {
+                    regBadgeText = "(过户费另算)";
+                    finalBrokerComm = allComm - (handling + secMgmt);   // 券商只上交两项, 过户费没包
+                    actualTotalFee = allComm + transfer + stamp;        // 因为没包, 所以散户的总账单里要加上这笔过户费
+                }
+
+                if(finalBrokerComm < 0) finalBrokerComm = 0; 
+
+                
+                if (!waiveMin5 && baseCommission < 5 && baseCommission > 0) {
+                    isMin5Triggered = true;
+                    brokerFormula = `Max(5, ${rawBaseFormula}) - 规费 =`;
+                } else {
+                    brokerFormula = `(${rawBaseFormula}) - 规费 =`;
+                }
+            }
+            
+            document.getElementById('reg-badge').innerText = regBadgeText; // 更新界面上的提示文字
+            const percentage = amount > 0 ? (actualTotalFee / amount) * 100 : 0;
+
+            // 更新 UI
+            document.getElementById('res-total').innerText = '¥ ' + actualTotalFee.toFixed(3);
+            document.getElementById('res-percent').innerText = percentage.toFixed(4) + ' %';
+            document.getElementById('res-stamp').innerText = '¥ ' + stamp.toFixed(3);
+            document.getElementById('res-reg').innerText = '¥ ' + regFee.toFixed(3);
+            document.getElementById('res-trans').innerText = '¥ ' + transfer.toFixed(3);
+            document.getElementById('res-hand').innerText = '¥ ' + handling.toFixed(3);
+            document.getElementById('res-sec').innerText = '¥ ' + secMgmt.toFixed(3);
+            document.getElementById('res-broker').innerText = '¥ ' + Math.max(0, finalBrokerComm).toFixed(3);
+            
+            // 更新公式展示
+            document.getElementById('formula-stamp').innerText = stampFormula;
+            document.getElementById('formula-broker').innerText = brokerFormula;
+
+            // 最低5元提示徽章
+            document.getElementById('min5-badge').style.display = isMin5Triggered ? 'inline' : 'none';
+        }
+
+        // 初始化计算与名言
+        window.onload = function() {
+            displayRandomQuote();
+            calculate();
+        };
+    </script>
+</body>
+</html>

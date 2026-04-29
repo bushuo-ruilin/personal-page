@@ -1,0 +1,227 @@
+<!DOCTYPE html><html lang="ZH-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5"><title>个人主页</title><meta name="author" content="@不说"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5168131_sm66z1lutsa.css"><style>/* 统一基础样式，防止图标过大或过小 */
+.iconfont {
+    font-size: inherit;
+    transition: color 0.3s ease;
+}
+
+/* CSDN 鼠标悬停变成官方的极客红 */
+a:hover .icon-csdn {
+    color: #fc5531 !important;
+}
+
+/* 如果你也加了知乎, 让它悬停变成知乎蓝 */
+a:hover .icon-zhihu {
+    color: #0084ff !important;
+}
+
+/* bilibili */
+a:hover .icon-bilibili- {
+    /* color: rgb(32, 176, 227) !important; */
+    color: #20b0e3 !important;
+}
+</style><link rel="shortcut icon" href="/personal-page/img/favicon.png"><link rel="stylesheet" href="/personal-page/css/index.css"><link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><meta name="generator" content="Hexo 7.1.1"></head><body><header id="page_header"><div class="header_wrap"><div id="blog_name"><a class="blog_title" id="site-name" href="/personal-page/">个人主页</a></div><button class="menus_icon"><div class="navicon"></div></button><ul class="menus_items"><li class="menus_item"><a class="site-page" href="/personal-page/#Home"> Home</a></li><li class="menus_item"><a class="site-page" href="/personal-page/about/"> 关于</a></li><li class="menus_item"><a class="site-page" href="/personal-page/about/%E5%85%B3%E4%BA%8E%E6%88%91.md"> 博客</a></li><li class="menus_item"><a class="site-page" href="/personal-page/my_tools/"> 工具</a></li></ul></div></header><main id="page_main"><div class="side-card sticky"><div class="card-wrap" itemscope itemtype="http://schema.org/Person"><div class="author-avatar"><img class="avatar-img" src="/personal-page/img/avatar.jpg" onerror="this.onerror=null;this.src='/personal-page/img/profile.png'" alt="avatar"></div><div class="author-discrip"><h3>@不说</h3><p class="author-bio">机器人工程专业、热衷于分享、爱好编程</p></div><div class="author-links"><button class="btn m-social-links">Links</button><ul class="social-icons"><li><a class="social-icon" href="https://github.com/bushuo-ruilin/" target="_blank"><i class="fab fa-github" aria-hidden="true"></i></a></li><li><a class="social-icon" href="QQ:3513566868" target="_blank"><i class="fab fa-qq" aria-hidden="true"></i></a></li><li><a class="social-icon" href="mailto:[3513566868@qq.com]" target="_blank"><i class="fas fa-envelope" aria-hidden="true"></i></a></li><li><a class="social-icon" href="https://space.bilibili.com/676602762" target="_blank"><i class="iconfont icon-bilibili-" aria-hidden="true"></i></a></li><li><a class="social-icon" href="https://blog.csdn.net/qq_50930131" target="_blank"><i class="iconfont icon-csdn" aria-hidden="true"></i></a></li><li><a class="social-icon" href="https://www.zhihu.com/people/bu-shuo-24-92-67" target="_blank"><i class="iconfont icon-zhihu" aria-hidden="true"></i></a></li></ul><ul class="social-links"><li><a class="e-social-link" href="https://www.uestc.edu.cn/" target="_blank"><i class="fas fa-graduation-cap" aria-hidden="true"></i><span>UESTC</span></a></li><li><a class="e-social-link" href="/personal-page/" target="_blank"><i class="fas fa-phone-alt" aria-hidden="true"></i><span>158****4496</span></a></li><li><a class="e-social-link" href="/personal-page/" target="_blank"><i class="fas fa-map-marker-alt" aria-hidden="true"></i><span>四川成都</span></a></li></ul></div><a class="cv-links" href="/personal-page/attaches/CV.pdf" target="_blank"><i class="fas fa-file-pdf" aria-hidden="true"><span>My Detail CV.</span></i></a></div></div><div class="page" itemscope itemtype="http://schema.org/CreativeWork"><h2 class="page-title"></h2><article><!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>男人必备的八大内核</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+
+    <!-- 样式表 -->
+    <!-- [Max-Width - TailwindCSS中文文档 | TailwindCSS中文网](https://www.tailwindcss.cn/docs/max-width) -->
+    <style>
+        /* 全局强制使用楷体 */
+        body {
+            font-family: 'KaiTi', '楷体', 'STKaiti', 'BiauKai', serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* 烫金文字渐变效果 */
+        .text-gold-gradient {
+            background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 动画相关基础类 */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+        .delay-6 { animation-delay: 0.6s; }
+        .delay-7 { animation-delay: 0.7s; }
+        .delay-8 { animation-delay: 0.8s; }
+
+        /* --- 原生 CSS 组件化：保证绝对兼容，拒绝退化为 Word --- */
+        .rule-card {
+            position: relative;
+            background-color: rgba(30, 41, 59, 0.6); /* slate-800/60 */
+            backdrop-filter: blur(4px);
+            border: 1px solid #334155; /* slate-700 */
+            padding: 2rem; 
+            border-radius: 1rem; 
+            transition: all 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .rule-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(248, 181, 0, 0.4);
+            box-shadow: 0 0 25px rgba(248, 181, 0, 0.15);
+        }
+        .rule-num {
+            position: absolute;
+            bottom: -1.5rem;
+            right: -0.5rem;
+            font-family: 'Times New Roman' !important;
+            font-size: 8rem;
+            font-weight: 900;
+            color: rgba(51, 65, 85, 0.3); /* slate-700/30 */
+            transition: transform 0.5s ease;
+            pointer-events: none;
+            line-height: 1;
+        }
+        .rule-card:hover .rule-num {
+            transform: scale(1.1);
+        }
+        .rule-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #fceabb;
+            letter-spacing: 0.05em;
+            position: relative;
+            z-index: 10;
+        }
+        @media (min-width: 768px) {
+            .rule-title { font-size: 1.5rem; } 
+        }
+        .rule-desc {
+            color: #cbd5e1; /* slate-300 */
+            line-height: 1.625;
+            text-align: justify;
+            position: relative;
+            z-index: 10;
+            font-size: 1rem;
+            flex-grow: 1;
+        }
+        @media (min-width: 768px) {
+            .rule-desc { font-size: 1.125rem; } 
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]">
+
+    <!-- 顶部标题区域 -->
+    <header class="relative pt-20 pb-16 text-center z-10 px-4">
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-900/90 to-transparent -z-10"></div>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-widest text-gold-gradient fade-in-up">
+            男人必备的八大内核
+        </h1>
+        <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed fade-in-up delay-1 tracking-wide">
+            兼顾情感关系中的边界感与主导性，<br class="hidden md:block"/>在平衡付出中展现诚意，在规则之中掌握主动。
+        </p>
+        <div class="w-24 h-1 bg-gradient-to-r from-transparent via-[#f8b500] to-transparent mx-auto mt-8 fade-in-up delay-2"></div>
+    </header>
+
+    <!-- 主体卡片网格 -->
+    <!-- 最大屏幕宽度限制max-w-7xl 1280px -->
+    <!-- [Max-Width - TailwindCSS中文文档 | TailwindCSS中文网](https://www.tailwindcss.cn/docs/max-width) -->
+    <!-- mx-auto    水平居中 -->
+    <!-- px-4       手机默认, 左右内边距16px -->
+    <!-- sm:px-t    平板(>=640px), 左右内边距24px -->
+    <!-- lg:px-8    电脑(>=1024), 左右内边距32px -->
+    
+    <!-- pb-20      底部内边距80px -->
+    <main class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <!-- grid           开启网格布局 -->
+        <!-- grid-cols-1    手机默认, 1列 -->
+        <!-- lg:grid-cols-4 电脑, 4列 -->
+        <!-- gap-6          卡片之间间距24px -->
+        <!-- xl:gap-8       大屏电脑(>=1280px), 间距变大为32px -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8">
+            
+            <div class="rule-card fade-in-up delay-1">
+                <div class="rule-num">1</div>
+                <h2 class="rule-title">永远语言利她，行为利己</h2>
+                <p class="rule-desc">主动关心、提供情绪价值（如日常问候、陪伴），但避免成为“远程买单侠”或被对方过度索取。</p>
+            </div>
+
+            <div class="rule-card fade-in-up delay-2">
+                <div class="rule-num">2</div>
+                <h2 class="rule-title">永远小事慷慨，大事吝啬</h2>
+                <p class="rule-desc">可承担约会中的合理消费（奶茶、晚餐、电影票等）或送小礼物，但需拒绝对方主动索要红包或大额转账。可以主动给，但拒绝对方伸手要。</p>
+            </div>
+
+            <div class="rule-card fade-in-up delay-3">
+                <div class="rule-num">3</div>
+                <h2 class="rule-title">永远承诺模糊，兑现精确</h2>
+                <p class="rule-desc">避免给出“买房子、买包”等具体承诺，改用“给你惊喜”等模糊表达，实际行动时用具体体验超出预期。</p>
+            </div>
+
+            <div class="rule-card fade-in-up delay-4">
+                <div class="rule-num">4</div>
+                <h2 class="rule-title">永远表面随和，原则强势</h2>
+                <p class="rule-desc">包容对方小缺点，但明确拒绝不合理要求（如无底线付出），守住关系中的底线。</p>
+                <!-- 女人就喜欢试探男人的底线 -->
+            </div>
+
+            <div class="rule-card fade-in-up delay-5">
+                <div class="rule-num">5</div>
+                <h2 class="rule-title">永远对她若即若离，对情敌知己知彼</h2>
+                <p class="rule-desc">保持适当距离感，同时了解其他竞争者动态，避免陷入被动，保持游刃有余。</p>
+            </div>
+
+            <div class="rule-card fade-in-up delay-6">
+                <div class="rule-num">6</div>
+                <h2 class="rule-title">永远情绪共情，认知领导</h2>
+                <p class="rule-desc">理解对方情绪并提供支持，但需保持自己的态度和框架，避免被对方牵着走。</p>
+            </div>
+
+            <div class="rule-card fade-in-up delay-7">
+                <div class="rule-num">7</div>
+                <!-- 对于长标题，采用更优雅的大小字号折行处理，不再撑破卡片 -->
+                <h2 class="rule-title">永远在规则内找缝隙，在缝隙中建新规</span></h2>
+                <p class="rule-desc">尊重双方差异，寻找共同交集（如一起看同一部电影），潜移默化中逐步建立新规则。</p>
+            </div>
+
+            <div class="rule-card fade-in-up delay-8">
+                <div class="rule-num">8</div>
+                <h2 class="rule-title">永远开场聊共鸣，终局聊通吃</h2>
+                <p class="rule-desc">用生活细节引发共鸣，同时掌控关系大方向，避免过度迎合导致关系失衡。</p>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 底部总结语 -->
+    <footer class="mt-4 mb-20 px-4 fade-in-up delay-8">
+        <div class="max-w-4xl mx-auto bg-gradient-to-r from-slate-800/0 via-slate-800/80 to-slate-800/0 p-8 text-center border-t border-b border-[#f8b500]/20 rounded-xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#fceabb] to-transparent opacity-30"></div>
+            <p class="text-lg md:text-2xl text-[#e2e8f0] leading-loose tracking-wide">
+                这些原则的核心是<span class="text-[#f8b500] font-bold mx-2">平衡付出与边界</span>，<br class="hidden md:block"/>
+                既展现诚意又保持主导性，适合希望在情感关系中<span class="text-[#f8b500] font-bold mx-2">掌握主动权</span>的男性参考。
+            </p>
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#fceabb] to-transparent opacity-30"></div>
+        </div>
+    </footer>
+
+</body>
+</html></article></div></main><div class="nav-wrap"><div class="nav"><button class="site-nav"><div class="navicon"></div></button><ul class="nav_items"><li class="nav_item"><a class="nav-page" href="/personal-page/#Home"> Home</a></li><li class="nav_item"><a class="nav-page" href="/personal-page/about/"> 关于</a></li><li class="nav_item"><a class="nav-page" href="/personal-page/about/%E5%85%B3%E4%BA%8E%E6%88%91.md"> 博客</a></li><li class="nav_item"><a class="nav-page" href="/personal-page/my_tools/"> 工具</a></li></ul></div><div class="cd-top"><i class="fa fa-arrow-up" aria-hidden="true"></i></div></div><footer id="page_footer"><div class="footer_wrap"><div class="copyright">&copy;2020 - 2026 by @不说</div><div class="theme-info">Powered by <a target="_blank" href="https://hexo.io" rel="nofollow noopener">Hexo</a> & <a target="_blank" href="https://github.com/PhosphorW/hexo-theme-academia" rel="nofollow noopener">Academia Theme</a></div></div></footer><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery-pjax@latest/jquery.pjax.min.js"></script><script src="/personal-page/js/main.js"></script></body></html>

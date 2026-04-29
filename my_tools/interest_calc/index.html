@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>理财收益与年化利率精算系统 - 极客大屏版</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 核心要求：英文数字 Times New Roman，中文楷体 */
+        body { 
+            font-family: 'Times New Roman', 'KaiTi', '楷体', 'STKaiti', serif; 
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .font-mono {
+            font-family: 'ui-monospace', 'Times New Roman', 'KaiTi'!important;
+        }
+        
+        .font-sans {
+            font-family: 'Times New Roman', 'KaiTi'!important;
+        }
+
+        .font-serif {
+            font-family: 'Times New Roman', 'KaiTi'!important;
+        }
+        /* 隐藏 input type="number" 的上下箭头 */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        
+        /* 玻璃拟物态 UI 风格 */
+        .glass-panel { 
+            background: rgba(30, 41, 59, 0.6); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* 楷体特殊加粗优化 */
+        h1, h2, h3, th, .font-bold { font-weight: 600; }
+        
+        /* 表格样式优化 */
+        .bank-table th, .bank-table td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .bank-table tr:last-child td { border-bottom: none; }
+        
+        /* 动画 */
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 xl:p-12 flex flex-col items-center">
+
+    <!-- 顶部信息栏 -->
+    <div class="w-full max-w-7xl flex justify-between items-end mb-8 border-b border-slate-700/50 pb-3">
+        <div class="text-sm text-slate-400 tracking-widest">
+            <i class="fas fa-landmark text-amber-500 mr-2"></i>固收理财量化分析系统 V1.1
+        </div>
+        <div id="sys-time" class="text-sm tracking-wider text-amber-500 font-bold font-mono">
+            <!-- 时钟动态更新区 -->
+        </div>
+    </div>
+
+    <div class="w-full max-w-7xl space-y-8">
+        
+        <!-- 页面标题 -->
+        <div class="text-center space-y-3 mb-10">
+            <h1 class="text-4xl md:text-5xl text-white tracking-widest"><i class="fas fa-coins text-amber-500 mr-4"></i>理财收益与利率精算引擎</h1>
+            <p class="text-slate-400 text-base tracking-widest mt-3">支持年化收益率与万份收益双向换算，精准演算多周期资金回报</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- ================= 左侧：参数输入区 ================= -->
+            <div class="lg:col-span-5 flex flex-col gap-8">
+                
+                <!-- 模块一：利率双向转换引擎 -->
+                <div class="glass-panel rounded-2xl p-6 md:p-8 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-50"></div>
+                    <h2 class="text-2xl text-white border-b border-slate-700/80 pb-3 tracking-widest mb-6">
+                        <i class="fas fa-exchange-alt text-amber-400 mr-3"></i>核心利率转换参数
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- 年化输入 -->
+                        <div>
+                            <label class="block text-base text-slate-400 mb-2 tracking-widest">预期年化收益率 (%)</label>
+                            <div class="relative">
+                                <input type="number" id="annualRate" value="2.50" step="0.01" class="w-full bg-slate-900/80 border border-slate-600 rounded-lg py-3 pl-4 pr-10 text-white text-xl font-bold font-mono focus:outline-none focus:border-amber-500 transition-colors shadow-inner" oninput="calcFromAnnual()">
+                                <span class="absolute right-4 top-3 text-slate-400 text-lg">%</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2 tracking-widest">修改此项，自动推算万份收益。</p>
+                        </div>
+
+                        <!-- 中间连接符 -->
+                        <div class="flex justify-center -my-2 text-slate-600">
+                            <i class="fas fa-link fa-rotate-90"></i>
+                        </div>
+
+                        <!-- 万份收益输入 -->
+                        <div>
+                            <label class="block text-base text-emerald-400 mb-2 tracking-widest">每万份每日收益 (元)</label>
+                            <div class="relative">
+                                <input type="number" id="daily10k" value="0.6849" step="0.0001" class="w-full bg-emerald-900/20 border border-emerald-700/50 rounded-lg py-3 pl-4 pr-10 text-emerald-400 text-xl font-bold font-mono focus:outline-none focus:border-emerald-500 transition-colors shadow-inner" oninput="calcFromDaily()">
+                                <span class="absolute right-4 top-3 text-emerald-600 text-lg">元</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2 tracking-widest">修改此项，自动反推年化收益率。基金常用指标。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 模块二：实盘资金投入配置 -->
+                <div class="glass-panel rounded-2xl p-6 md:p-8 relative overflow-hidden">
+                    <h2 class="text-2xl text-white border-b border-slate-700/80 pb-3 tracking-widest mb-6">
+                        <i class="fas fa-wallet text-blue-400 mr-3"></i>资金与周期配置
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- 投资本金 -->
+                        <div>
+                            <label class="block text-base text-slate-400 mb-2 tracking-widest">投入总资金 (元)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-slate-400 text-lg font-mono">¥</span>
+                                <input type="number" id="principal" value="100000" step="1000" class="w-full bg-slate-900/80 border border-slate-600 rounded-lg py-3 pl-10 pr-4 text-white text-xl font-bold font-mono focus:outline-none focus:border-blue-500 transition-colors shadow-inner" oninput="updateResults()">
+                            </div>
+                        </div>
+
+                        <!-- 持有天数 -->
+                        <div>
+                            <label class="block text-base text-slate-400 mb-2 tracking-widest">计划持有天数</label>
+                            <div class="relative">
+                                <input type="number" id="holdDays" value="30" step="1" class="w-full bg-slate-900/80 border border-slate-600 rounded-lg py-3 pl-4 pr-12 text-white text-xl font-bold font-mono focus:outline-none focus:border-blue-500 transition-colors shadow-inner" oninput="updateResults()">
+                                <span class="absolute right-4 top-3 text-slate-400 text-lg">天</span>
+                            </div>
+                            <div class="flex gap-2 mt-3">
+                                <button onclick="setDays(7)" class="flex-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 rounded border border-slate-600 tracking-widest transition-colors">7天</button>
+                                <button onclick="setDays(30)" class="flex-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 rounded border border-slate-600 tracking-widest transition-colors">1个月</button>
+                                <button onclick="setDays(90)" class="flex-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 rounded border border-slate-600 tracking-widest transition-colors">1个季度</button>
+                                <button onclick="setDays(365)" class="flex-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 rounded border border-slate-600 tracking-widest transition-colors">1年</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 右侧：结果展示与银行利率 ================= -->
+            <div class="lg:col-span-7 flex flex-col gap-8">
+                
+                <!-- 模块三：收益推演结果雷达 -->
+                <div class="glass-panel rounded-2xl p-6 md:p-8 border-l-4 border-l-amber-500 bg-gradient-to-r from-amber-900/10 to-transparent shadow-xl">
+                    <h2 class="text-xl text-amber-400 mb-6 tracking-widest"><i class="fas fa-chart-pie mr-2"></i>资金回报推演结果</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <!-- 预期总收益 -->
+                        <div class="bg-black/60 rounded-2xl p-6 border border-amber-500/40 text-center shadow-[0_0_25px_rgba(245,158,11,0.15)]">
+                            <p class="text-sm text-slate-400 mb-2 tracking-widest">持有期内总收益</p>
+                            <div id="resTotalProfit" class="text-4xl md:text-5xl font-bold text-amber-400 tracking-wider font-mono mb-2">
+                                + 0.00
+                            </div>
+                            <p class="text-xs text-slate-500 tracking-widest">绝对收益金额 (元)</p>
+                        </div>
+                        
+                        <!-- 衍生指标 -->
+                        <div class="flex flex-col justify-between space-y-4">
+                            <!-- 日均躺赚 -->
+                            <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-600 flex justify-between items-center shadow-inner">
+                                <div>
+                                    <p class="text-xs text-slate-400 tracking-widest mb-1">平均每日躺赚</p>
+                                    <p class="text-xl font-bold text-emerald-400 font-mono" id="resDailyProfit">+ 0.00</p>
+                                </div>
+                                <i class="fas fa-sun text-slate-600 text-2xl"></i>
+                            </div>
+                            <!-- 本息合计 -->
+                            <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-600 flex justify-between items-center shadow-inner">
+                                <div>
+                                    <p class="text-xs text-slate-400 tracking-widest mb-1">期末本息合计回收</p>
+                                    <p class="text-xl font-bold text-blue-400 font-mono" id="resTotalAmount">0.00</p>
+                                </div>
+                                <i class="fas fa-piggy-bank text-slate-600 text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-sm text-slate-400 bg-slate-900/50 p-4 rounded-lg border border-slate-700/50 tracking-wider leading-relaxed">
+                        <i class="fas fa-info-circle mr-2 text-amber-500"></i>
+                        <span class="text-amber-200">底层算法解密：</span><br>
+                        总收益 = 投入本金 × 年化利率 ÷ 365天 × 实际持有天数。金融机构标准计息通常按一年 365 天计算（部分特殊债券按 360 天）。
+                    </div>
+                </div>
+
+                <!-- 模块四：宏观监控 - 主流银行挂牌利率表及导航 -->
+                <div class="glass-panel rounded-2xl p-6 md:p-8 border-t-2 border-t-purple-500/50 shadow-xl flex-1 flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl text-purple-400 tracking-widest">
+                            <i class="fas fa-university mr-2"></i>主流银行人民币存款挂牌年利率基准表
+                        </h2>
+                        <span class="text-xs bg-purple-900/40 text-purple-300 px-3 py-1 rounded-full border border-purple-700/50 tracking-widest">
+                            最近一次降息后数据
+                        </span>
+                    </div>
+                    
+                    <p class="text-sm text-slate-300 mb-4 tracking-widest leading-relaxed">
+                        注：下表展示四大国有行与典型股份制银行的官方挂牌基准利率。实际网点办理时，大额存单或特色存款会有所上浮。
+                    </p>
+                    
+                    <div class="overflow-x-auto rounded-lg border border-slate-700 shadow-inner mb-5">
+<table class="w-full text-left border-collapse bank-table">
+    <thead>
+        <tr class="bg-slate-800/80 text-slate-300 text-sm tracking-widest">
+            <th class="p-3 font-normal">银行类别</th>
+            <th class="p-3 font-normal text-center">活期</th>
+            <th class="p-3 font-normal text-center text-emerald-400">三个月</th>
+            <th class="p-3 font-normal text-center text-sky-400">一年期</th>
+            <th class="p-3 font-normal text-center text-amber-400">三年期</th>
+            <th class="p-3 font-normal text-center text-rose-400">五年期</th>
+        </tr>
+    </thead>
+        <tbody class="text-sm tracking-widest text-slate-200 bg-black/30 font-mono">
+            <tr class="hover:bg-slate-800/50 transition-colors">
+                <td class="p-3 font-sans">
+                    <div class="flex items-center"><span class="w-2 h-2 rounded-full bg-red-600 mr-2"></span>国有六大行<br><span class="text-xs text-slate-500 font-serif ml-4">工/农/中/建/交/邮</span></div>
+                </td>
+                <td class="p-3 text-center">0.05%</td>
+                <td class="p-3 text-center text-emerald-300">0.65%</td>
+                <td class="p-3 text-center text-sky-300 font-bold">0.95%</td>
+                <td class="p-3 text-center text-amber-300 font-bold">1.25%</td>
+                <td class="p-3 text-center text-rose-300 font-bold">1.30%</td>
+            </tr>
+            <tr class="hover:bg-slate-800/50 transition-colors">
+                <td class="p-3 font-sans">
+                    <div class="flex items-center"><span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>股份制商业银行<br><span class="text-xs text-slate-500 font-serif ml-4">招商/浦发/中信等</span></div>
+                </td>
+                <td class="p-3 text-center">0.05%</td>
+                <td class="p-3 text-center text-emerald-300">0.70%</td>
+                <td class="p-3 text-center text-sky-300 font-bold">1.15%</td>
+                <td class="p-3 text-center text-amber-300 font-bold">1.30%</td>
+                <td class="p-3 text-center text-rose-300 font-bold">1.35%</td>
+            </tr>
+            <tr class="hover:bg-slate-800/50 transition-colors">
+                <td class="p-3 font-sans">
+                    <div class="flex items-center"><span class="w-2 h-2 rounded-full bg-amber-500 mr-2"></span>城商行/农商行<br><span class="text-xs text-slate-500 font-serif ml-4">江苏/南京等 (参考)</span></div>
+                </td>
+                <td class="p-3 text-center">0.05%</td>
+                <td class="p-3 text-center text-emerald-300">1.10%</td>
+                <td class="p-3 text-center text-sky-300 font-bold">1.50%</td>
+                <td class="p-3 text-center text-amber-300 font-bold">1.90%</td>
+                <td class="p-3 text-center text-rose-300 font-bold">1.95%</td>
+            </tr>
+        </tbody>
+    </table>
+                    </div>
+                    
+                    <!-- 动态收益对比提示 -->
+                    <div class="mb-6 p-4 bg-slate-800/50 rounded-lg border border-slate-600 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="text-sm text-slate-300 tracking-widest">
+                            <i class="fas fa-balance-scale mr-2 text-sky-400"></i>您当前测算的年化利率为 <span id="compareRate" class="text-amber-400 font-bold font-mono text-lg">2.50%</span>
+                        </div>
+                        <div id="compareResult" class="text-xs px-3 py-1.5 rounded-full font-bold tracking-widest bg-amber-900/40 text-amber-300 border border-amber-700/50 text-center">
+                            跑赢六大行三年期定期存款
+                        </div>
+                    </div>
+
+                    <!-- 【新增】官方数据查询导航 -->
+                    <div class="mt-auto border-t border-slate-700/50 pt-5">
+                        <h3 class="text-sm text-purple-400 mb-3 tracking-widest flex items-center">
+                            <i class="fas fa-external-link-alt mr-2"></i>官方利率查询导航及数据验证
+                        </h3>
+                        <div class="flex flex-wrap gap-3">
+                            <a href="https://www.icbc.com.cn/" target="_blank" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg border border-slate-600 transition-colors flex items-center shadow-sm">
+                                <i class="fas fa-building mr-2 text-red-400"></i>工商银行官网
+                            </a>
+                            <a href="https://www.cmbchina.com/" target="_blank" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg border border-slate-600 transition-colors flex items-center shadow-sm">
+                                <i class="fas fa-building mr-2 text-blue-400"></i>招商银行官网
+                            </a>
+                            <a href="https://data.eastmoney.com/cjsj/ckll.html" target="_blank" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg border border-slate-600 transition-colors flex items-center shadow-sm">
+                                <i class="fas fa-chart-line mr-2 text-amber-400"></i>东方财富·存款利率中心
+                            </a>
+                            <a href="http://www.pbc.gov.cn/" target="_blank" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg border border-slate-600 transition-colors flex items-center shadow-sm">
+                                <i class="fas fa-landmark mr-2 text-purple-400"></i>央行官网 (基准参考)
+                            </a>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-4 tracking-widest leading-relaxed bg-black/20 p-3 rounded">
+                            * 声明：界面中的数据系系统定期汇总。为获取最精准、实时的各大行存款利率信息或特色大额存单活动，建议点击上方导航直接访问官方信息发布渠道。
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- 底部箴言 -->
+        <div class="text-center py-6 text-slate-500 text-sm tracking-widest">
+            <p>复利是世界第八大奇迹。知之者赚，不知者被赚。 —— 阿尔伯特·爱因斯坦</p>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 实时时钟逻辑 ---
+        function updateTime() {
+            const now = new Date();
+            const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const date = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const day = days[now.getDay()];
+
+            const timeStr = `${year}年${month}月${date}日 ${hours}:${minutes}:${seconds} ${day}`;
+            document.getElementById('sys-time').innerText = timeStr;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // --- 核心计算逻辑 ---
+        const DAYS_IN_YEAR = 365; // 标准金融计息基数
+
+        // 快捷设置天数
+        function setDays(days) {
+            document.getElementById('holdDays').value = days;
+            updateResults();
+        }
+
+        // 1. 由 年化利率 推算 万份收益
+        function calcFromAnnual() {
+            let annualRate = parseFloat(document.getElementById('annualRate').value);
+            if (isNaN(annualRate) || annualRate < 0) return;
+            
+            // 公式：万份收益 = (年化 / 100) / 365 * 10000
+            let daily10k = (annualRate / 100) / DAYS_IN_YEAR * 10000;
+            document.getElementById('daily10k').value = daily10k.toFixed(4); // 保留4位小数更精准
+            
+            updateResults();
+        }
+
+        // 2. 由 万份收益 反推 年化利率
+        function calcFromDaily() {
+            let daily10k = parseFloat(document.getElementById('daily10k').value);
+            if (isNaN(daily10k) || daily10k < 0) return;
+            
+            // 公式：年化 = (万份收益 / 10000) * 365 * 100
+            let annualRate = (daily10k / 10000) * DAYS_IN_YEAR * 100;
+            document.getElementById('annualRate').value = annualRate.toFixed(4);
+            
+            updateResults();
+        }
+
+        // 3. 演算实盘收益结果
+        function updateResults() {
+            // 获取当前基础数据
+            let annualRate = parseFloat(document.getElementById('annualRate').value) || 0;
+            let principal = parseFloat(document.getElementById('principal').value) || 0;
+            let days = parseInt(document.getElementById('holdDays').value) || 0;
+
+            // 计算总收益：本金 * 年化利率 * (持有天数 / 365)
+            let totalProfit = principal * (annualRate / 100) * (days / DAYS_IN_YEAR);
+            let totalAmount = principal + totalProfit;
+            
+            // 计算平均日收益 (如果不满一天，防止除以0，直接取总收益除以天数或者按1天算)
+            let dailyProfit = days > 0 ? (totalProfit / days) : (principal * (annualRate / 100) / DAYS_IN_YEAR);
+
+            // 更新 UI 数字
+            document.getElementById('resTotalProfit').innerText = '+ ' + totalProfit.toFixed(2);
+            document.getElementById('resDailyProfit').innerText = '+ ' + dailyProfit.toFixed(2);
+            
+            // 格式化本息合计 (加千位分隔符)
+            let formatter = new Intl.NumberFormat('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('resTotalAmount').innerText = '¥ ' + formatter.format(totalAmount);
+
+            // 更新下方对比提示
+            updateCompareBadge(annualRate);
+        }
+
+        // 4. 动态对比标签生成
+        function updateCompareBadge(rate) {
+            document.getElementById('compareRate').innerText = rate.toFixed(2) + '%';
+            let badge = document.getElementById('compareResult');
+            
+            if (rate < 0.15) {
+                badge.className = "text-xs px-3 py-1.5 rounded-full font-bold tracking-widest bg-red-900/40 text-red-300 border border-red-700/50 text-center";
+                badge.innerText = "低于银行活期，建议重新规划";
+            } else if (rate < 1.35) {
+                badge.className = "text-xs px-3 py-1.5 rounded-full font-bold tracking-widest bg-slate-800 text-slate-300 border border-slate-600 text-center";
+                badge.innerText = "介于活期与大行一年期定存之间";
+            } else if (rate < 1.75) {
+                badge.className = "text-xs px-3 py-1.5 rounded-full font-bold tracking-widest bg-emerald-900/40 text-emerald-300 border border-emerald-700/50 text-center";
+                badge.innerText = "已跑赢国有大行一年期定期存款";
+            } else if (rate < 3.00) {
+                badge.className = "text-xs px-3 py-1.5 rounded-full font-bold tracking-widest bg-amber-900/40 text-amber-300 border border-amber-700/50 text-center";
+                badge.innerText = "已跑赢六大行三年/五年期定存顶格";
+            } else {
+                badge.className = "text-xs px-3 py-1.5 rounded-full font-bold tracking-widest bg-rose-900/40 text-rose-300 border border-rose-700/50 animate-pulse text-center";
+                badge.innerText = "高收益伴随高风险，超越绝大多数固收产品";
+            }
+        }
+
+        // 初始化首次计算
+        calcFromAnnual();
+    </script>
+</body>
+</html>

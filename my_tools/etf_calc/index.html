@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETF 交易成本与回本探测器 - 极客大屏版</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 核心要求：英文数字 Times New Roman，中文楷体 */
+        body { 
+            font-family: 'Times New Roman', 'KaiTi', '楷体', 'STKaiti', serif; 
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+        
+        .font-mono {
+            font-family: 'ui-monospace', 'Times New Roman', 'KaiTi'!important;
+        }
+        
+        /* 隐藏 input type="number" 的上下箭头 */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        
+        /* 玻璃拟物态 UI 风格 */
+        .glass-panel { 
+            background: rgba(30, 41, 59, 0.6); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* 楷体特殊加粗优化 */
+        h1, h2, h3, .font-bold { font-weight: 600; }
+        
+        /* 提示卡片过渡动画 */
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 xl:p-12 flex flex-col items-center">
+
+    <!-- 顶部信息栏：时钟与系统状态 -->
+    <div class="w-full max-w-7xl flex justify-between items-end mb-8 border-b border-slate-700/50 pb-3">
+        <div class="text-sm text-slate-400">
+            <i class="fas fa-shield-alt text-emerald-500 mr-2"></i>A股 ETF 交易量化分析系统 V3.0 (大屏Pro版)
+        </div>
+        <div id="sys-time" class="text-sm tracking-wider text-amber-500 font-bold">
+            <!-- 时钟动态更新区 -->
+        </div>
+    </div>
+
+    <div class="w-full max-w-7xl space-y-8">
+        
+        <!-- 页面标题 -->
+        <div class="text-center space-y-3 mb-10">
+            <h1 class="text-4xl md:text-5xl text-white tracking-widest"><i class="fas fa-chess-knight text-blue-500 mr-4"></i>ETF 交易回本与测算引擎</h1>
+            <p class="text-slate-400 text-base tracking-widest mt-3">精准探测 T+0 / T+1 稳赚不赔的最低出单价及预期收益</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- ================= 左侧：参数输入区 ================= -->
+            <div class="lg:col-span-5 glass-panel rounded-2xl p-6 md:p-8 relative overflow-hidden flex flex-col gap-6">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50"></div>
+                <h2 class="text-2xl text-white border-b border-slate-700/80 pb-3 tracking-widest">
+                    <i class="fas fa-sliders-h text-blue-400 mr-3"></i>盘口参数设定
+                </h2>
+                
+                <div class="space-y-6">
+                    <!-- 买入价格 & 数量 -->
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-base text-slate-400 mb-2 tracking-widest">买入单价 (元)</label>
+                            <input type="number" id="buyPrice" value="1.000" step="0.001" class="w-full bg-slate-900/80 border border-slate-600 rounded-lg py-3 px-4 text-white text-lg focus:outline-none focus:border-blue-500 transition-colors" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="block text-base text-slate-400 mb-2 tracking-widest">买入数量 (份)</label>
+                            <input type="number" id="buyShares" value="10000" step="100" class="w-full bg-slate-900/80 border border-slate-600 rounded-lg py-3 px-4 text-white text-lg focus:outline-none focus:border-blue-500 transition-colors" oninput="calculate()">
+                        </div>
+                    </div>
+
+                    <!-- 总金额显示 -->
+                    <div class="bg-slate-800/40 rounded-xl p-4 flex justify-between items-center border border-slate-700/50">
+                        <span class="text-base text-slate-300 tracking-widest">建仓总耗资：</span>
+                        <span class="text-2xl font-bold text-blue-400">¥ <span id="buyAmountDisplay">10000.00</span></span>
+                    </div>
+
+                    <!-- 佣金费率 -->
+                    <div>
+                        <label class="block text-base text-slate-400 mb-2 tracking-widest">券商佣金率 (‰) <span class="text-slate-500 ml-2 text-sm">万0.5=0.05</span></label>
+                        <div class="relative">
+                            <input type="number" id="commRate" value="0.05" step="0.01" class="w-full bg-slate-900/80 border border-slate-600 rounded-lg py-3 pl-4 pr-10 text-white text-lg focus:outline-none focus:border-blue-500 transition-colors" oninput="calculate()">
+                            <span class="absolute right-4 top-3 text-slate-400 text-lg">‰</span>
+                        </div>
+                    </div>
+
+                    <!-- 佣金模式 -->
+                    <div>
+                        <label class="block text-base text-slate-400 mb-3 tracking-widest">佣金属性结构</label>
+                        <div class="flex bg-slate-900/80 rounded-xl p-1.5 border border-slate-600">
+                            <button id="btn-all-in" class="flex-1 py-2 text-base tracking-widest rounded-lg bg-blue-600/80 text-white transition-all shadow-lg" onclick="setMode('all-in')">全佣 (含规费)</button>
+                            <button id="btn-net" class="flex-1 py-2 text-base tracking-widest rounded-lg text-slate-400 hover:text-white transition-all" onclick="setMode('net')">净佣 (规费另算)</button>
+                        </div>
+                    </div>
+
+                    <!-- 保底限制 -->
+                    <div>
+                        <label class="block text-base text-slate-400 mb-2 tracking-widest">最低消费阀门 (保底)</label>
+                        <select id="minFee" class="w-full bg-slate-900/80 border border-slate-600 rounded-xl py-3 px-4 text-white text-lg focus:outline-none focus:border-blue-500 transition-colors tracking-widest" onchange="calculate()">
+                            <option value="5">5.0 元保底 (行业默认)</option>
+                            <option value="1">1.0 元保底 (常见隐藏坑)</option>
+                            <option value="0.1" selected>0.1 元保底 (高阶特殊费率)</option>
+                            <option value="0">0.0 元无保底 (终极免五)</option>
+                        </select>
+                    </div>
+
+                    <!-- 目标卖出预测 -->
+                    <div class="pt-6 mt-4 border-t border-slate-700/50">
+                        <label class="block text-base text-emerald-400 mb-3 tracking-widest"><i class="fas fa-bullseye mr-2"></i>预期目标卖出价 (元)</label>
+                        <input type="number" id="targetSellPrice" value="1.050" step="0.001" class="w-full bg-emerald-900/20 border border-emerald-700/50 rounded-xl py-4 px-4 text-emerald-400 focus:outline-none focus:border-emerald-400 transition-colors font-bold text-2xl" oninput="calculate()">
+                        <p class="text-sm text-slate-500 mt-2 tracking-widest">输入计划卖出价，右侧实时演算最终落袋净利与收益率。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 右侧：计算结果区 ================= -->
+            <div class="lg:col-span-7 space-y-8 flex flex-col">
+                
+                <!-- 成本账单与回本探测 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- 左半：单边成本拆解 -->
+                    <div class="glass-panel rounded-2xl p-6 md:p-8 border-t-4 border-t-rose-500 flex flex-col justify-between shadow-lg">
+                        <div>
+                            <h2 class="text-xl text-white mb-6 tracking-widest"><i class="fas fa-file-invoice-dollar text-rose-400 mr-2"></i>买入单边成本剖析</h2>
+                            <div class="space-y-4">
+                                <!-- 规费免除项 -->
+                                <div class="flex justify-between text-sm border-b border-slate-700/50 pb-3">
+                                    <span class="text-slate-400 tracking-widest">印花税 & 过户费</span>
+                                    <span class="text-emerald-400 tracking-widest font-bold">ETF 全免 0.00</span>
+                                </div>
+                                
+                                <!-- 算术佣金 -->
+                                <div class="flex justify-between text-sm border-b border-slate-700/50 pb-3 mt-3">
+                                    <span class="text-slate-400 tracking-widest" id="rawCommLabel">原始算术佣金</span>
+                                    <span class="text-slate-300 font-mono" id="rawCommDisplay">0.00 元</span>
+                                </div>
+                                
+                                <!-- 保底判定后 -->
+                                <div class="flex justify-between text-sm border-b border-slate-700/50 pb-3 mt-3">
+                                    <span class="text-slate-400 tracking-widest" id="actualCommLabel">保底判定后佣金</span>
+                                    <span class="text-amber-400 font-mono" id="actualCommDisplay">0.00 元</span>
+                                </div>
+
+                                <!-- 规费 -->
+                                <div class="flex justify-between text-sm border-b border-slate-700/50 pb-3 mt-3">
+                                    <span class="text-slate-400 tracking-widest">经手规费 (万0.4)</span>
+                                    <span class="text-slate-300 font-mono" id="regFeeDisplay">0.00 元</span>
+                                </div>
+                                
+                                <!-- 最终合计 -->
+                                <div class="flex justify-between items-center text-base border-b border-slate-700/50 pb-4 mt-5">
+                                    <span class="text-white tracking-widest flex items-center font-bold">买入实际扣取手续费</span>
+                                    <span class="text-rose-500 font-bold text-2xl font-mono" id="actualBuyFee">0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右半：回本探测器 -->
+                    <div class="glass-panel rounded-2xl p-6 md:p-8 border-t-4 border-t-sky-500 bg-gradient-to-br from-sky-900/20 to-transparent flex flex-col justify-center shadow-lg">
+                        <h2 class="text-xl text-white mb-3 tracking-widest"><i class="fas fa-radar text-sky-400 mr-2"></i>极速回本雷达</h2>
+                        <p class="text-sm text-slate-400 mb-6 tracking-widest leading-relaxed">系统已将买卖双边手续费计入，探测出稳赚不赔的最低安全卖出点。</p>
+                        
+                        <div class="text-center py-6 bg-black/50 rounded-2xl border border-sky-500/30 mb-6 shadow-[inset_0_2px_15px_rgba(0,0,0,0.5)]">
+                            <p class="text-base text-slate-300 mb-2 tracking-widest">保本必胜卖出底价</p>
+                            <div class="text-5xl font-bold text-sky-400 mb-4 font-mono">
+                                ¥ <span id="breakevenPrice">0.000</span>
+                            </div>
+                            <p class="text-sm font-bold text-sky-300 bg-sky-900/40 inline-block px-4 py-1.5 rounded-full border border-sky-500/30" id="ticksNeeded">
+                                仅需上涨 0 个 Tick
+                            </p>
+                        </div>
+                        <div class="flex justify-between items-center text-base px-2 tracking-widest">
+                            <span class="text-slate-400">触及此底价的净利：</span>
+                            <span class="text-sky-400 font-bold font-mono text-lg" id="profitAtBreakeven">0.00 元</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 预期收益测算面板 (重构加详版) -->
+                <div class="glass-panel rounded-2xl p-6 md:p-8 border-l-4 border-l-amber-500 bg-gradient-to-r from-amber-900/10 to-transparent shadow-lg">
+                    <h2 class="text-xl text-amber-400 mb-6 tracking-widest"><i class="fas fa-hand-holding-usd mr-2"></i>目标价卖出全流程推演</h2>
+                    
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                        <!-- 左侧：资金流明细 -->
+                        <div class="flex-1 w-full space-y-4 text-base tracking-widest text-slate-300">
+                            <div class="flex justify-between border-b border-slate-700/50 pb-2">
+                                <span>买入总成本 <span class="text-sm text-slate-500 ml-1">(本金 + 买入手续费)</span></span>
+                                <span id="totalBuyCostDisplay" class="font-mono text-white">0.00</span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-700/50 pb-2">
+                                <span>预期卖出总额 <span class="text-sm text-slate-500 ml-1">(卖出单价 × 数量)</span></span>
+                                <span id="targetSellAmountDisplay" class="font-mono text-white">0.00</span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-700/50 pb-2 text-rose-300">
+                                <span>预期卖出手续费 <span class="text-sm text-rose-900/50 ml-1">(单边扣除)</span></span>
+                                <span id="targetSellFeeDisplay" class="font-mono">- 0.00</span>
+                            </div>
+                            <div class="flex justify-between pt-1">
+                                <span class="text-emerald-400">预期卖出净回款 <span class="text-sm text-emerald-900/50 ml-1">(卖出总额 - 手续费)</span></span>
+                                <span id="targetNetIncomeDisplay" class="font-mono text-emerald-400 font-bold">0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- 右侧：核心利润 -->
+                        <div class="md:w-5/12 w-full bg-black/60 rounded-2xl p-6 border border-amber-500/40 text-center shadow-[0_0_25px_rgba(245,158,11,0.15)]">
+                            <p class="text-sm text-slate-400 mb-2 tracking-widest">最终落袋净利润</p>
+                            <div id="targetNetProfit" class="text-4xl md:text-5xl font-bold text-amber-400 tracking-wider font-mono mb-3">
+                                + 0.00
+                            </div>
+                            <div class="inline-block bg-amber-900/30 border border-amber-500/30 px-4 py-1.5 rounded-full">
+                                <p id="targetProfitRatio" class="text-base font-bold text-amber-500">收益率: +0.00%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 规费科普百科 -->
+                <div class="glass-panel rounded-2xl p-6 border border-slate-700/50 shadow-md">
+                    <h3 class="text-lg text-purple-400 mb-3 tracking-widest"><i class="fas fa-book-open mr-2"></i>最新规费标准解密 (ETF专属)</h3>
+                    <p class="text-base text-slate-300 leading-relaxed tracking-wider mb-4">
+                        根据现行规定，ETF 基金交易的规费极其低廉，且 <strong class="text-rose-400 font-bold bg-rose-900/20 px-1 rounded">免收过户费与证管费</strong>。
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-sm tracking-widest mt-4">
+                        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-600 shadow-inner">
+                            <span class="block text-slate-400 mb-2">经手费 (交交易所)</span>
+                            <span class="text-white text-lg">0.04 ‰ <span class="block text-xs text-slate-500 mt-1">双向收取</span></span>
+                        </div>
+                        <div class="bg-emerald-900/20 p-3 rounded-xl border border-emerald-700/40 shadow-inner">
+                            <span class="block text-emerald-500 mb-2">证管费 (交证监会)</span>
+                            <span class="text-emerald-400 font-bold text-lg">免 收 (0 ‰)</span>
+                        </div>
+                        <div class="bg-emerald-900/20 p-3 rounded-xl border border-emerald-700/40 shadow-inner">
+                            <span class="block text-emerald-500 mb-2">过户费 (交中登)</span>
+                            <span class="text-emerald-400 font-bold text-lg">免 收 (0 ‰)</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-500 mt-4 tracking-widest bg-slate-900/50 p-3 rounded-lg">
+                        <i class="fas fa-info-circle mr-2 text-purple-500"></i>
+                        注：ETF 的实际规费仅为 <span class="text-purple-400 font-bold">万分之0.4 (0.04‰)</span>。若交易货币 ETF 或债券 ETF，则该项微小的规费亦暂免收取。
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= 底部：投资实战智库 ================= -->
+        <div class="glass-panel rounded-2xl p-6 md:p-8 mt-10 relative border-t-2 border-amber-500/50 shadow-xl">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700/80 pb-3">
+                <h2 class="text-2xl text-amber-400 tracking-widest">
+                    <i class="fas fa-lightbulb mr-3"></i>游资与机构的 ETF 实战铁律
+                </h2>
+                <button onclick="changeTip()" class="text-base text-slate-300 bg-slate-800 hover:bg-slate-700 px-5 py-2 rounded-full transition-colors border border-slate-600 tracking-widest focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-md">
+                    <i class="fas fa-sync-alt mr-2"></i>换一条锦囊
+                </button>
+            </div>
+            
+            <div class="min-h-[100px] flex items-center">
+                <p id="tipContent" class="text-xl text-slate-200 leading-loose tracking-wider fade-in border-l-4 border-amber-500 pl-5 py-2">
+                    加载中...
+                </p>
+            </div>
+        </div>
+
+        <!-- ================= 页面最底部：金融大师箴言 ================= -->
+        <div class="glass-panel rounded-2xl p-6 md:p-8 mt-8 relative border-t-2 border-purple-500/50 shadow-xl mb-12">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700/80 pb-3">
+                <h2 class="text-2xl text-purple-400 tracking-widest">
+                    <i class="fas fa-quote-left mr-3"></i>华尔街大师箴言
+                </h2>
+                <button onclick="changeQuote()" class="text-base text-slate-300 bg-slate-800 hover:bg-slate-700 px-5 py-2 rounded-full transition-colors border border-slate-600 tracking-widest focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-md">
+                    <i class="fas fa-random mr-2"></i>悟道
+                </button>
+            </div>
+            
+            <div class="min-h-[120px] flex flex-col justify-center items-center text-center px-4 md:px-16 py-4">
+                <p id="quoteText" class="text-2xl text-slate-200 leading-loose tracking-wider fade-in italic">
+                    加载中...
+                </p>
+                <p id="quoteAuthor" class="text-base text-purple-400 mt-6 tracking-widest font-bold fade-in">
+                    - 加载中 -
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 实时时钟逻辑 ---
+        function updateTime() {
+            const now = new Date();
+            const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const date = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const day = days[now.getDay()];
+
+            const timeStr = `${year}年${month}月${date}日 ${hours}:${minutes}:${seconds} ${day}`;
+            document.getElementById('sys-time').innerText = timeStr;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // --- 投资指南智库逻辑 ---
+        const tips = [
+            "【网格交易法】ETF 天然适合网格交易，因为它没有印花税且走势贴合大盘。设定好中枢价格，每跌 N% 买入一档，每涨 N% 卖出一档，让震荡市成为你的提款机。",
+            "【底仓与现金思维】永远不要一次性满仓！ETF 不存在个股退市归零的风险，只要你手里还有一半的现金用来逢低补仓，时间最终会站在你这边。",
+            "【高溢价避险纪律】看到跨境 ETF（如日经、半导体）溢价率超过 3% 时，必须管住手绝对不买！甚至可以逢高卖出吃溢价差额，等溢价抹平再接回。",
+            "【看宽基，做窄基】判断市场大趋势看沪深300，但实际做 T 时，高波动的行业 ETF（如科创50芯片、医药）能提供更多的套利空间和振幅。",
+            "【死磕“彻底免五”】玩 ETF 如果你的券商还有 5 元或 1 元保底，立刻换券商！高频网格交易中，几十元的利润常常会被保底手续费直接生吃掉一半。",
+            "【右侧建仓法】不要伸手去接直线下跌的飞刀。耐心等 ETF 在底部横盘放量，或者均线出现金叉拐头向上（右侧）时再分批建仓，安全边际极高。",
+            "【纪律重于神测】没有人能精准预测明天的涨跌。少看玄学股评，多制定严格的交易计划：“如果跌破 X 元我买多少，如果涨到 Y 元我卖出多少”。",
+            "【定投止盈法则】对于沪深300等宽基，长期定投一定赚钱，但“只会买不会卖”一场空。设定一个目标收益率（如 15%），达到后必须分批止盈收割利润。",
+            "【资金利用率最大化】周四下午不要轻易买入货币或债券 ETF。为了让资金在周末产生利息，做逆回购或者周五再买入，是专业玩家的标配习惯。",
+            "【警惕流动性陷阱】买 ETF 时看看它的日成交额。如果每天成交额不到几百万，坚决回避！否则你想卖的时候，盘口根本没有足够的买单来接盘。"
+        ];
+
+        let currentTipIndex = -1;
+        function changeTip() {
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * tips.length);
+            } while (newIndex === currentTipIndex && tips.length > 1);
+            
+            currentTipIndex = newIndex;
+            const tipEl = document.getElementById('tipContent');
+            
+            // 触发 CSS 动画
+            tipEl.classList.remove('fade-in');
+            void tipEl.offsetWidth; // 强制重绘
+            tipEl.classList.add('fade-in');
+            
+            // 解析文本并对标题进行高亮着色
+            const text = tips[newIndex];
+            const formattedText = text.replace(/(【.*?】)/g, '<span class="text-amber-500 font-bold">$1</span> ');
+            tipEl.innerHTML = formattedText;
+        }
+        changeTip();
+
+        // --- 金融大师箴言逻辑 ---
+        const quotes = [
+            { text: "别人贪婪时我恐惧，别人恐惧时我贪婪。", author: "沃伦·巴菲特 (Warren Buffett)" },
+            { text: "市场就像一只钟摆，永远在绝望与盲目乐观之间左右摆动。", author: "霍华德·马克斯 (Howard Marks)" },
+            { text: "投资的第一条准则是不要赔钱；第二条准则是永远不要忘记第一条。", author: "沃伦·巴菲特 (Warren Buffett)" },
+            { text: "买股票不知道其背后的公司，就像打扑克不看牌一样。", author: "彼得·林奇 (Peter Lynch)" },
+            { text: "在投资中，即使你是对的，如果时机错了，你也可能会破产。", author: "乔治·索罗斯 (George Soros)" },
+            { text: "宏大叙事往往让你亏大钱，常识才能让你赚大钱。", author: "查理·芒格 (Charlie Munger)" },
+            { text: "市场总是错的，但如果你不顺势而为，错的就是你。", author: "杰西·利弗莫尔 (Jesse Livermore)" },
+            { text: "最重要的不是你对市场的预测有多准，而是你犯错时能活下来。", author: "瑞·达利欧 (Ray Dalio)" },
+            { text: "承担你能承受的风险，但千万别在可以避免的风险上押注。", author: "约翰·博格 (John Bogle)" },
+            { text: "牛市是普通投资者亏损的主要原因。", author: "约翰·邓普顿 (John Templeton)" },
+            { text: "永远不要在没有止损点的情况下进行交易。", author: "威廉·江恩 (William Gann)" },
+            { text: "如果你没有做好承受痛苦的准备，那就离开吧，别指望做个常胜将军。", author: "理查德·丹尼斯 (Richard Dennis)" }
+        ];
+
+        let currentQuoteIndex = -1;
+        function changeQuote() {
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * quotes.length);
+            } while (newIndex === currentQuoteIndex && quotes.length > 1);
+            
+            currentQuoteIndex = newIndex;
+            const quoteTextEl = document.getElementById('quoteText');
+            const quoteAuthorEl = document.getElementById('quoteAuthor');
+            
+            // 触发 CSS 动画
+            quoteTextEl.classList.remove('fade-in');
+            quoteAuthorEl.classList.remove('fade-in');
+            void quoteTextEl.offsetWidth; // 强制重绘
+            void quoteAuthorEl.offsetWidth;
+            quoteTextEl.classList.add('fade-in');
+            quoteAuthorEl.classList.add('fade-in');
+            
+            // 更新内容
+            quoteTextEl.innerText = "“ " + quotes[newIndex].text + " ”";
+            quoteAuthorEl.innerText = "—— " + quotes[newIndex].author;
+        }
+        changeQuote();
+        setInterval(changeQuote, 15000);
+
+        // --- 计算器核心逻辑 ---
+        let isNetMode = false; // 默认改为全佣
+
+        function setMode(mode) {
+            isNetMode = (mode === 'net');
+            document.getElementById('btn-all-in').className = !isNetMode 
+                ? 'flex-1 py-2 text-base tracking-widest rounded-lg bg-blue-600/80 text-white transition-all shadow-lg border border-blue-500' 
+                : 'flex-1 py-2 text-base tracking-widest rounded-lg text-slate-400 hover:text-white transition-all border border-transparent';
+            document.getElementById('btn-net').className = isNetMode 
+                ? 'flex-1 py-2 text-base tracking-widest rounded-lg bg-blue-600/80 text-white transition-all shadow-lg border border-blue-500' 
+                : 'flex-1 py-2 text-base tracking-widest rounded-lg text-slate-400 hover:text-white transition-all border border-transparent';
+            calculate();
+        }
+
+        // 精准费用计算引擎
+        function calcFee(amount, rate, minFee, isNet) {
+            const regRate = 0.04 / 1000; 
+            let mathComm = amount * (rate / 1000); // 纯数学计算出的原始佣金
+            let finalFee = 0;
+            let breakdown = { mathComm: mathComm, actualComm: 0, regFee: 0, minApplied: false };
+
+            if (isNet) {
+                // 净佣：独立受保底限制，之后再加规费
+                let actualComm = Math.max(minFee, mathComm);
+                let regFee = amount * regRate;
+                finalFee = actualComm + regFee;
+                
+                breakdown.actualComm = actualComm;
+                breakdown.regFee = regFee;
+                breakdown.minApplied = (actualComm === minFee && mathComm < minFee);
+            } else {
+                // 全佣：整体受保底限制（内含规费）
+                let actualComm = Math.max(minFee, mathComm);
+                finalFee = actualComm;
+                
+                breakdown.actualComm = actualComm;
+                breakdown.regFee = amount * regRate; // 为了界面展示，剥离出其对应的理论规费
+                breakdown.minApplied = (actualComm === minFee && mathComm < minFee);
+            }
+            
+            return { total: finalFee, breakdown: breakdown };
+        }
+
+        function calculate() {
+            const price = parseFloat(document.getElementById('buyPrice').value) || 0;
+            const shares = parseFloat(document.getElementById('buyShares').value) || 0;
+            const rate = parseFloat(document.getElementById('commRate').value) || 0;
+            const minFee = parseFloat(document.getElementById('minFee').value);
+            const targetSellPrice = parseFloat(document.getElementById('targetSellPrice').value) || 0;
+
+            const amount = price * shares;
+            document.getElementById('buyAmountDisplay').innerText = amount.toFixed(2);
+
+            if (amount <= 0) return;
+
+            // 1. 买入成本核算与明细拆解
+            const buyCost = calcFee(amount, rate, minFee, isNetMode);
+            
+            document.getElementById('actualBuyFee').innerText = buyCost.total.toFixed(3) + ' 元';
+            document.getElementById('rawCommDisplay').innerText = buyCost.breakdown.mathComm.toFixed(3) + ' 元';
+            document.getElementById('regFeeDisplay').innerText = buyCost.breakdown.regFee.toFixed(3) + ' 元' + (isNetMode ? " (额外收取)" : " (已含于全佣内)");
+            
+            // 组装保底判定结果的显示 HTML
+            let actualCommHtml = buyCost.breakdown.actualComm.toFixed(3) + ' 元';
+            if (buyCost.breakdown.minApplied) {
+                actualCommHtml += '<span class="text-xs bg-red-900/50 text-red-300 px-2 py-0.5 rounded ml-2 border border-red-700/50">已触发保底</span>';
+            }
+            document.getElementById('actualCommDisplay').innerHTML = actualCommHtml;
+
+            // 根据模式动态修改左侧的标签文本
+            document.getElementById('rawCommLabel').innerText = isNetMode ? "原始净佣金 (理论值)" : "原始全佣金 (理论值)";
+            document.getElementById('actualCommLabel').innerText = isNetMode ? "保底判定后净佣金" : "保底判定后全佣金";
+
+            // 2. 智能回本探测
+            let tick = 0.001;
+            let currentSellPrice = price;
+            let iterations = 0;
+            let targetFound = false;
+            let breakevenProfit = 0;
+
+            while (iterations < 2000) { 
+                currentSellPrice += tick;
+                let sellAmount = currentSellPrice * shares;
+                let sellCost = calcFee(sellAmount, rate, minFee, isNetMode);
+                
+                breakevenProfit = sellAmount - sellCost.total - amount - buyCost.total;
+
+                if (breakevenProfit > 0) {
+                    targetFound = true;
+                    break;
+                }
+                iterations++;
+            }
+
+            if (targetFound) {
+                document.getElementById('breakevenPrice').innerText = currentSellPrice.toFixed(3);
+                let ticksNeeded = Math.round((currentSellPrice - price) / tick);
+                document.getElementById('ticksNeeded').innerHTML = `<i class="fas fa-arrow-trend-up mr-1"></i> 仅需上涨 ${ticksNeeded} 个 Tick`;
+                document.getElementById('profitAtBreakeven').innerText = breakevenProfit.toFixed(2) + ' 元';
+                document.getElementById('profitAtBreakeven').className = "text-sky-400 font-bold font-mono text-xl";
+            } else {
+                document.getElementById('breakevenPrice').innerText = "---";
+                document.getElementById('ticksNeeded').innerText = "异常或单量太小";
+                document.getElementById('profitAtBreakeven').innerText = "0.00 元";
+            }
+
+            // 3. 目标卖出收益全推演
+            if (targetSellPrice > 0) {
+                const targetSellAmount = targetSellPrice * shares;
+                const targetSellCost = calcFee(targetSellAmount, rate, minFee, isNetMode);
+                
+                // 核心逻辑计算
+                const totalBuyCostWithFee = amount + buyCost.total; // 本金+买入手续费
+                const targetNetIncome = targetSellAmount - targetSellCost.total; // 卖出总额-卖出手续费
+                const targetNetProfit = targetNetIncome - totalBuyCostWithFee; // 净利
+                const profitRatio = (targetNetProfit / totalBuyCostWithFee) * 100;
+
+                // 界面渲染
+                document.getElementById('totalBuyCostDisplay').innerText = totalBuyCostWithFee.toFixed(3);
+                document.getElementById('targetSellAmountDisplay').innerText = targetSellAmount.toFixed(3);
+                document.getElementById('targetSellFeeDisplay').innerText = "- " + targetSellCost.total.toFixed(3);
+                document.getElementById('targetNetIncomeDisplay').innerText = targetNetIncome.toFixed(3);
+                
+                const profitEl = document.getElementById('targetNetProfit');
+                const ratioEl = document.getElementById('targetProfitRatio');
+                
+                if (targetNetProfit >= 0) {
+                    profitEl.innerText = "+ " + targetNetProfit.toFixed(2);
+                    profitEl.className = "text-4xl md:text-5xl font-bold text-amber-400 tracking-wider font-mono mb-3";
+                    ratioEl.innerText = `收益率: +${profitRatio.toFixed(2)}%`;
+                    ratioEl.className = "text-base font-bold text-amber-500";
+                } else {
+                    profitEl.innerText = targetNetProfit.toFixed(2);
+                    profitEl.className = "text-4xl md:text-5xl font-bold text-emerald-400 tracking-wider font-mono mb-3";
+                    ratioEl.innerText = `收益率: ${profitRatio.toFixed(2)}%`;
+                    ratioEl.className = "text-base font-bold text-emerald-500";
+                }
+            }
+        }
+
+        // 初始化
+        calculate();
+    </script>
+</body>
+</html>
+
+<!-- [至简博客 - 蒙大明的个人博客](https://damirmeng.github.io/) -->
