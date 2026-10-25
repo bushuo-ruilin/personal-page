@@ -1,1 +1,642 @@
-{"version":3,"app":"知薪 Salary Studio","settings":{"cityId":"city-1792646441275","salary":29000,"bonus":0,"deduction":1500,"customSocialBase":false,"customFundBase":true,"socialBase":20000,"fundBase":15000,"bonusMode":"separate","bonusEnabled":true,"bonusType":"months","bonusMonths":3,"deductionEnabled":false,"spreadBonus":false,"includePersonalFund":false},"cities":[{"id":"shanghai","name":"上海","socialMin":7500,"socialMax":37500,"fundMin":2690,"fundMax":37500,"medicalExtra":0,"updated":"2026-10-22","source":"demo","rates":[{"key":"pension","name":"养老保险","personal":8,"company":16},{"key":"medical","name":"医疗保险","personal":2,"company":9},{"key":"unemployment","name":"失业保险","personal":0.5,"company":0.5},{"key":"injury","name":"工伤保险","personal":0,"company":0.2},{"key":"maternity","name":"生育保险","personal":0,"company":0},{"key":"fund","name":"住房公积金","personal":7,"company":7}]},{"id":"beijing","name":"北京","socialMin":7000,"socialMax":35000,"fundMin":2500,"fundMax":35000,"medicalExtra":3,"updated":"2026-10-22","source":"demo","rates":[{"key":"pension","name":"养老保险","personal":8,"company":16},{"key":"medical","name":"医疗保险","personal":2,"company":9.8},{"key":"unemployment","name":"失业保险","personal":0.5,"company":0.5},{"key":"injury","name":"工伤保险","personal":0,"company":0.2},{"key":"maternity","name":"生育保险","personal":0,"company":0},{"key":"fund","name":"住房公积金","personal":12,"company":12}]},{"id":"shenzhen","name":"深圳","socialMin":4500,"socialMax":30000,"fundMin":2500,"fundMax":40000,"medicalExtra":0,"updated":"2026-10-22","source":"demo","rates":[{"key":"pension","name":"养老保险","personal":8,"company":16},{"key":"medical","name":"医疗保险","personal":2,"company":6},{"key":"unemployment","name":"失业保险","personal":0.5,"company":0.5},{"key":"injury","name":"工伤保险","personal":0,"company":0.2},{"key":"maternity","name":"生育保险","personal":0,"company":0},{"key":"fund","name":"住房公积金","personal":5,"company":5}]},{"id":"hangzhou","name":"杭州","socialMin":4800,"socialMax":25000,"fundMin":2500,"fundMax":40000,"medicalExtra":0,"updated":"2026-10-22","source":"demo","rates":[{"key":"pension","name":"养老保险","personal":8,"company":16},{"key":"medical","name":"医疗保险","personal":2,"company":9.5},{"key":"unemployment","name":"失业保险","personal":0.5,"company":0.5},{"key":"injury","name":"工伤保险","personal":0,"company":0.2},{"key":"maternity","name":"生育保险","personal":0,"company":0},{"key":"fund","name":"住房公积金","personal":12,"company":12}]},{"id":"city-1792646441275","name":"成都","socialMin":4699,"socialMax":23493,"fundMin":2330,"fundMax":32969,"medicalExtra":0,"updated":"2026-10-22","source":"custom","rates":[{"key":"pension","name":"养老保险","personal":8,"company":16},{"key":"medical","name":"医疗保险","personal":2,"company":9},{"key":"unemployment","name":"失业保险","personal":0.4,"company":0.6},{"key":"injury","name":"工伤保险","personal":0,"company":0.24},{"key":"maternity","name":"生育保险","personal":0,"company":0},{"key":"fund","name":"住房公积金","personal":6,"company":6}]}],"expenses":[{"id":"expense-1792662197920-son4cf","name":"房租","amount":1400,"month":0},{"id":"expense-1792662242399-27i5mi","name":"水电、燃气、物业","amount":300,"month":0},{"id":"expense-1792662258480-qvaz4o","name":"吃饭","amount":600,"month":0},{"id":"expense-1792662276183-4aqmkv","name":"水果、零食","amount":150,"month":0},{"id":"expense-1792662315798-ei3nml","name":"通勤","amount":180,"month":0},{"id":"expense-1792662342142-8onor2","name":"个人日用","amount":200,"month":0},{"id":"expense-1792662353329-jaaknc","name":"话费、流量","amount":40,"month":0},{"id":"expense-1792662359917-inpl8b","name":"医疗","amount":150,"month":0}],"overtime":{"base":6000,"weekdayDays":20,"weekdayHours":2,"weekendDays":4,"weekendHours":8,"holidayDays":0,"holidayHours":8,"months":12,"compensatoryLeave":false,"includeInSalary":false,"startMonth":1},"content":{"quotes":[{"id":"quote-1","text":"生活的理想，就是为了理想的生活。","author":"张闻天","kind":"quote","enabled":true},{"id":"quote-2","text":"千里之行，始于足下。","author":"老子《道德经》","kind":"quote","enabled":true},{"id":"quote-3","text":"不积跬步，无以至千里；不积小流，无以成江海。","author":"荀子《劝学》","kind":"quote","enabled":true},{"id":"quote-4","text":"长风破浪会有时，直挂云帆济沧海。","author":"李白《行路难》","kind":"quote","enabled":true},{"id":"quote-5","text":"采菊东篱下，悠然见南山。","author":"陶渊明《饮酒》","kind":"quote","enabled":true},{"id":"quote-6","text":"行到水穷处，坐看云起时。","author":"王维《终南别业》","kind":"quote","enabled":true},{"id":"quote-7","text":"天生我材必有用，千金散尽还复来。","author":"李白《将进酒》","kind":"quote","enabled":true},{"id":"quote-8","text":"山重水复疑无路，柳暗花明又一村。","author":"陆游《游山西村》","kind":"quote","enabled":true},{"id":"quote-9","text":"竹杖芒鞋轻胜马，谁怕？一蓑烟雨任平生。","author":"苏轼《定风波》","kind":"quote","enabled":true},{"id":"quote-10","text":"海内存知己，天涯若比邻。","author":"王勃《送杜少府之任蜀州》","kind":"quote","enabled":true},{"id":"quote-11","text":"会当凌绝顶，一览众山小。","author":"杜甫《望岳》","kind":"quote","enabled":true},{"id":"quote-12","text":"纸上得来终觉浅，绝知此事要躬行。","author":"陆游《冬夜读书示子聿》","kind":"quote","enabled":true},{"id":"quote-13","text":"路漫漫其修远兮，吾将上下而求索。","author":"屈原《离骚》","kind":"quote","enabled":true},{"id":"quote-14","text":"学而时习之，不亦说乎？","author":"《论语》","kind":"quote","enabled":true},{"id":"quote-15","text":"己所不欲，勿施于人。","author":"《论语》","kind":"quote","enabled":true},{"id":"quote-16","text":"知足不辱，知止不殆，可以长久。","author":"老子《道德经》","kind":"quote","enabled":true},{"id":"quote-17","text":"穷则独善其身，达则兼善天下。","author":"《孟子》","kind":"quote","enabled":true},{"id":"quote-18","text":"非淡泊无以明志，非宁静无以致远。","author":"诸葛亮《诫子书》","kind":"quote","enabled":true},{"id":"quote-19","text":"问渠那得清如许？为有源头活水来。","author":"朱熹《观书有感》","kind":"quote","enabled":true},{"id":"quote-20","text":"少壮不努力，老大徒伤悲。","author":"汉乐府《长歌行》","kind":"quote","enabled":true},{"id":"wisdom-1","text":"把生活过好，也是一种值得认真经营的事业。","author":"生活小记","kind":"wisdom","enabled":true},{"id":"wisdom-2","text":"给未来留一点积蓄，也给今天留一点欢喜。","author":"生活小记","kind":"wisdom","enabled":true},{"id":"wisdom-3","text":"钱要算清楚，生活要慢慢过。","author":"生活小记","kind":"wisdom","enabled":true},{"id":"wisdom-4","text":"积累不必惊天动地，每一个小小的坚持都有意义。","author":"生活小记","kind":"wisdom","enabled":true}],"links":[{"id":"link-1","name":"工具派官网 · 工资计算器","description":"税后到手/五险一金/个税/年终奖","url":"https://gjupai.com/salary-calculator","enabled":true},{"id":"link-2","name":"365 工具箱 · 个税计算器","description":"工资、年终奖和个税计算","url":"https://www.toolbox365.cn/tools/tax-calc/","enabled":true},{"id":"link-3","name":"薪金个税计算器","description":"工资薪金累计预扣个税测算","url":"https://taxcalc.dq.cn/Home/Salary","enabled":true},{"id":"link-1792666740951-q15a8","name":"企评社|到手工资计算器","description":"到手工资计算器 - 税后工资在线计算 / 五险一金 + 个税试算","url":"https://www.qipingshe.cn/salary/takehome","enabled":true}]},"payday":{"day":10,"weekend":"previous"},"mortgage":{"type":"commercial","inputMode":"amount","commercialAmount":1000000,"fundAmount":400000,"housePrice":2000000,"unitPrice":25000,"area":80,"downPercent":30,"rateMode":"direct","commercialRate":3.1,"fundRate":2.6,"lpr":3.5,"basisPoints":-40,"months":360,"startMonth":"2026-11","method":"annuity","monthlyIncome":20000,"livingCosts":6000,"emergencySavings":100000,"incomeDrop":20,"showReminder":false,"reminder":"提醒自己：贷款买房就是套牢。签字之前，想清楚未来的月供，也给生活留一点自由。","amountUnit":"wan","chartScales":{"payment":{"auto":true,"min":0,"max":10000,"step":2000},"balance":{"auto":true,"min":0,"max":10000,"step":2000},"cumulativeInterest":{"auto":true,"min":0,"max":10000,"step":2000}}},"carLoan":{"price":300000,"downPercent":30,"months":36,"annualRate":4.5,"monthlyFeeRate":0.25,"mode":"apr","method":"annuity","serviceFee":2000,"purchaseTax":15000,"insurance":6000,"registration":500,"startMonth":"2026-09","amountUnit":"wan","chartScales":{"payment":{"auto":true,"min":0,"max":10000,"step":2000},"balance":{"auto":true,"min":0,"max":10000,"step":2000},"cumulativeInterest":{"auto":true,"min":0,"max":10000,"step":2000}}},"uiSettings":{"dashboardCollapsed":false},"incomeClock":{"source":"salary","monthlyIncome":15000,"paidDays":21.75,"start":"09:00","end":"18:00","breakEnabled":true,"breakStart":"12:00","breakEnd":"13:00","workdays":[1,2,3,4,5],"goal":30},"projectStorage":{"enabled":true,"updatedAt":"2026-10-23T15:18:36.231Z"}}
+{
+  "version": 3,
+  "app": "知薪 Salary Studio",
+  "settings": {
+    "cityId": "city-1792646441275",
+    "salary": 29000,
+    "bonus": 0,
+    "deduction": 1500,
+    "customSocialBase": false,
+    "customFundBase": true,
+    "socialBase": 20000,
+    "fundBase": 15000,
+    "bonusMode": "separate",
+    "bonusEnabled": true,
+    "bonusType": "months",
+    "bonusMonths": 3,
+    "deductionEnabled": false,
+    "spreadBonus": false,
+    "includePersonalFund": false
+  },
+  "cities": [
+    {
+      "id": "shanghai",
+      "name": "上海",
+      "socialMin": 7500,
+      "socialMax": 37500,
+      "fundMin": 2690,
+      "fundMax": 37500,
+      "medicalExtra": 0,
+      "updated": "2026-10-22",
+      "source": "demo",
+      "rates": [
+        {
+          "key": "pension",
+          "name": "养老保险",
+          "personal": 8,
+          "company": 16
+        },
+        {
+          "key": "medical",
+          "name": "医疗保险",
+          "personal": 2,
+          "company": 9
+        },
+        {
+          "key": "unemployment",
+          "name": "失业保险",
+          "personal": 0.5,
+          "company": 0.5
+        },
+        {
+          "key": "injury",
+          "name": "工伤保险",
+          "personal": 0,
+          "company": 0.2
+        },
+        {
+          "key": "maternity",
+          "name": "生育保险",
+          "personal": 0,
+          "company": 0
+        },
+        {
+          "key": "fund",
+          "name": "住房公积金",
+          "personal": 7,
+          "company": 7
+        }
+      ]
+    },
+    {
+      "id": "beijing",
+      "name": "北京",
+      "socialMin": 7000,
+      "socialMax": 35000,
+      "fundMin": 2500,
+      "fundMax": 35000,
+      "medicalExtra": 3,
+      "updated": "2026-10-22",
+      "source": "demo",
+      "rates": [
+        {
+          "key": "pension",
+          "name": "养老保险",
+          "personal": 8,
+          "company": 16
+        },
+        {
+          "key": "medical",
+          "name": "医疗保险",
+          "personal": 2,
+          "company": 9.8
+        },
+        {
+          "key": "unemployment",
+          "name": "失业保险",
+          "personal": 0.5,
+          "company": 0.5
+        },
+        {
+          "key": "injury",
+          "name": "工伤保险",
+          "personal": 0,
+          "company": 0.2
+        },
+        {
+          "key": "maternity",
+          "name": "生育保险",
+          "personal": 0,
+          "company": 0
+        },
+        {
+          "key": "fund",
+          "name": "住房公积金",
+          "personal": 12,
+          "company": 12
+        }
+      ]
+    },
+    {
+      "id": "shenzhen",
+      "name": "深圳",
+      "socialMin": 4500,
+      "socialMax": 30000,
+      "fundMin": 2500,
+      "fundMax": 40000,
+      "medicalExtra": 0,
+      "updated": "2026-10-22",
+      "source": "demo",
+      "rates": [
+        {
+          "key": "pension",
+          "name": "养老保险",
+          "personal": 8,
+          "company": 16
+        },
+        {
+          "key": "medical",
+          "name": "医疗保险",
+          "personal": 2,
+          "company": 6
+        },
+        {
+          "key": "unemployment",
+          "name": "失业保险",
+          "personal": 0.5,
+          "company": 0.5
+        },
+        {
+          "key": "injury",
+          "name": "工伤保险",
+          "personal": 0,
+          "company": 0.2
+        },
+        {
+          "key": "maternity",
+          "name": "生育保险",
+          "personal": 0,
+          "company": 0
+        },
+        {
+          "key": "fund",
+          "name": "住房公积金",
+          "personal": 5,
+          "company": 5
+        }
+      ]
+    },
+    {
+      "id": "hangzhou",
+      "name": "杭州",
+      "socialMin": 4800,
+      "socialMax": 25000,
+      "fundMin": 2500,
+      "fundMax": 40000,
+      "medicalExtra": 0,
+      "updated": "2026-10-22",
+      "source": "demo",
+      "rates": [
+        {
+          "key": "pension",
+          "name": "养老保险",
+          "personal": 8,
+          "company": 16
+        },
+        {
+          "key": "medical",
+          "name": "医疗保险",
+          "personal": 2,
+          "company": 9.5
+        },
+        {
+          "key": "unemployment",
+          "name": "失业保险",
+          "personal": 0.5,
+          "company": 0.5
+        },
+        {
+          "key": "injury",
+          "name": "工伤保险",
+          "personal": 0,
+          "company": 0.2
+        },
+        {
+          "key": "maternity",
+          "name": "生育保险",
+          "personal": 0,
+          "company": 0
+        },
+        {
+          "key": "fund",
+          "name": "住房公积金",
+          "personal": 12,
+          "company": 12
+        }
+      ]
+    },
+    {
+      "id": "city-1792646441275",
+      "name": "成都",
+      "socialMin": 4699,
+      "socialMax": 23493,
+      "fundMin": 2330,
+      "fundMax": 32969,
+      "medicalExtra": 0,
+      "updated": "2026-10-22",
+      "source": "custom",
+      "rates": [
+        {
+          "key": "pension",
+          "name": "养老保险",
+          "personal": 8,
+          "company": 16
+        },
+        {
+          "key": "medical",
+          "name": "医疗保险",
+          "personal": 2,
+          "company": 9
+        },
+        {
+          "key": "unemployment",
+          "name": "失业保险",
+          "personal": 0.4,
+          "company": 0.6
+        },
+        {
+          "key": "injury",
+          "name": "工伤保险",
+          "personal": 0,
+          "company": 0.24
+        },
+        {
+          "key": "maternity",
+          "name": "生育保险",
+          "personal": 0,
+          "company": 0
+        },
+        {
+          "key": "fund",
+          "name": "住房公积金",
+          "personal": 6,
+          "company": 6
+        }
+      ]
+    }
+  ],
+  "expenses": [
+    {
+      "id": "expense-1792662197920-son4cf",
+      "name": "房租",
+      "amount": 1400,
+      "month": 0
+    },
+    {
+      "id": "expense-1792662242399-27i5mi",
+      "name": "水电、燃气、物业",
+      "amount": 300,
+      "month": 0
+    },
+    {
+      "id": "expense-1792662258480-qvaz4o",
+      "name": "吃饭",
+      "amount": 600,
+      "month": 0
+    },
+    {
+      "id": "expense-1792662276183-4aqmkv",
+      "name": "水果、零食",
+      "amount": 150,
+      "month": 0
+    },
+    {
+      "id": "expense-1792662315798-ei3nml",
+      "name": "通勤",
+      "amount": 180,
+      "month": 0
+    },
+    {
+      "id": "expense-1792662342142-8onor2",
+      "name": "个人日用",
+      "amount": 200,
+      "month": 0
+    },
+    {
+      "id": "expense-1792662353329-jaaknc",
+      "name": "话费、流量",
+      "amount": 40,
+      "month": 0
+    },
+    {
+      "id": "expense-1792662359917-inpl8b",
+      "name": "医疗",
+      "amount": 150,
+      "month": 0
+    }
+  ],
+  "overtime": {
+    "base": 6000,
+    "weekdayDays": 20,
+    "weekdayHours": 2,
+    "weekendDays": 4,
+    "weekendHours": 8,
+    "holidayDays": 0,
+    "holidayHours": 8,
+    "months": 12,
+    "compensatoryLeave": false,
+    "includeInSalary": false,
+    "startMonth": 1
+  },
+  "content": {
+    "quotes": [
+      {
+        "id": "quote-1",
+        "text": "生活的理想，就是为了理想的生活。",
+        "author": "张闻天",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-2",
+        "text": "千里之行，始于足下。",
+        "author": "老子《道德经》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-3",
+        "text": "不积跬步，无以至千里；不积小流，无以成江海。",
+        "author": "荀子《劝学》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-4",
+        "text": "长风破浪会有时，直挂云帆济沧海。",
+        "author": "李白《行路难》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-5",
+        "text": "采菊东篱下，悠然见南山。",
+        "author": "陶渊明《饮酒》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-6",
+        "text": "行到水穷处，坐看云起时。",
+        "author": "王维《终南别业》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-7",
+        "text": "天生我材必有用，千金散尽还复来。",
+        "author": "李白《将进酒》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-8",
+        "text": "山重水复疑无路，柳暗花明又一村。",
+        "author": "陆游《游山西村》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-9",
+        "text": "竹杖芒鞋轻胜马，谁怕？一蓑烟雨任平生。",
+        "author": "苏轼《定风波》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-10",
+        "text": "海内存知己，天涯若比邻。",
+        "author": "王勃《送杜少府之任蜀州》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-11",
+        "text": "会当凌绝顶，一览众山小。",
+        "author": "杜甫《望岳》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-12",
+        "text": "纸上得来终觉浅，绝知此事要躬行。",
+        "author": "陆游《冬夜读书示子聿》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-13",
+        "text": "路漫漫其修远兮，吾将上下而求索。",
+        "author": "屈原《离骚》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-14",
+        "text": "学而时习之，不亦说乎？",
+        "author": "《论语》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-15",
+        "text": "己所不欲，勿施于人。",
+        "author": "《论语》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-16",
+        "text": "知足不辱，知止不殆，可以长久。",
+        "author": "老子《道德经》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-17",
+        "text": "穷则独善其身，达则兼善天下。",
+        "author": "《孟子》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-18",
+        "text": "非淡泊无以明志，非宁静无以致远。",
+        "author": "诸葛亮《诫子书》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-19",
+        "text": "问渠那得清如许？为有源头活水来。",
+        "author": "朱熹《观书有感》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "quote-20",
+        "text": "少壮不努力，老大徒伤悲。",
+        "author": "汉乐府《长歌行》",
+        "kind": "quote",
+        "enabled": true
+      },
+      {
+        "id": "wisdom-1",
+        "text": "把生活过好，也是一种值得认真经营的事业。",
+        "author": "生活小记",
+        "kind": "wisdom",
+        "enabled": true
+      },
+      {
+        "id": "wisdom-2",
+        "text": "给未来留一点积蓄，也给今天留一点欢喜。",
+        "author": "生活小记",
+        "kind": "wisdom",
+        "enabled": true
+      },
+      {
+        "id": "wisdom-3",
+        "text": "钱要算清楚，生活要慢慢过。",
+        "author": "生活小记",
+        "kind": "wisdom",
+        "enabled": true
+      },
+      {
+        "id": "wisdom-4",
+        "text": "积累不必惊天动地，每一个小小的坚持都有意义。",
+        "author": "生活小记",
+        "kind": "wisdom",
+        "enabled": true
+      }
+    ],
+    "links": [
+      {
+        "id": "link-1",
+        "name": "工具派官网 · 工资计算器",
+        "description": "税后到手/五险一金/个税/年终奖",
+        "url": "https://gjupai.com/salary-calculator",
+        "enabled": true
+      },
+      {
+        "id": "link-2",
+        "name": "365 工具箱 · 个税计算器",
+        "description": "工资、年终奖和个税计算",
+        "url": "https://www.toolbox365.cn/tools/tax-calc/",
+        "enabled": true
+      },
+      {
+        "id": "link-3",
+        "name": "薪金个税计算器",
+        "description": "工资薪金累计预扣个税测算",
+        "url": "https://taxcalc.dq.cn/Home/Salary",
+        "enabled": true
+      },
+      {
+        "id": "link-1792666740951-q15a8",
+        "name": "企评社|到手工资计算器",
+        "description": "到手工资计算器 - 税后工资在线计算 / 五险一金 + 个税试算",
+        "url": "https://www.qipingshe.cn/salary/takehome",
+        "enabled": true
+      }
+    ]
+  },
+  "payday": {
+    "day": 10,
+    "weekend": "previous"
+  },
+  "mortgage": {
+    "type": "commercial",
+    "inputMode": "amount",
+    "commercialAmount": 1000000,
+    "fundAmount": 400000,
+    "housePrice": 2000000,
+    "unitPrice": 25000,
+    "area": 80,
+    "downPercent": 30,
+    "rateMode": "direct",
+    "commercialRate": 3.1,
+    "fundRate": 2.6,
+    "lpr": 3.5,
+    "basisPoints": -40,
+    "months": 360,
+    "startMonth": "2026-11",
+    "method": "annuity",
+    "monthlyIncome": 20000,
+    "livingCosts": 6000,
+    "emergencySavings": 100000,
+    "incomeDrop": 20,
+    "showReminder": false,
+    "reminder": "提醒自己：贷款买房就是套牢。签字之前，想清楚未来的月供，也给生活留一点自由。",
+    "amountUnit": "wan",
+    "chartScales": {
+      "payment": {
+        "auto": true,
+        "min": 0,
+        "max": 10000,
+        "step": 2000
+      },
+      "balance": {
+        "auto": true,
+        "min": 0,
+        "max": 10000,
+        "step": 2000
+      },
+      "cumulativeInterest": {
+        "auto": true,
+        "min": 0,
+        "max": 10000,
+        "step": 2000
+      }
+    }
+  },
+  "carLoan": {
+    "price": 300000,
+    "downPercent": 30,
+    "months": 36,
+    "annualRate": 4.5,
+    "monthlyFeeRate": 0.25,
+    "mode": "apr",
+    "method": "annuity",
+    "serviceFee": 2000,
+    "purchaseTax": 15000,
+    "insurance": 6000,
+    "registration": 500,
+    "startMonth": "2026-09",
+    "amountUnit": "wan",
+    "chartScales": {
+      "payment": {
+        "auto": true,
+        "min": 0,
+        "max": 10000,
+        "step": 2000
+      },
+      "balance": {
+        "auto": true,
+        "min": 0,
+        "max": 10000,
+        "step": 2000
+      },
+      "cumulativeInterest": {
+        "auto": true,
+        "min": 0,
+        "max": 10000,
+        "step": 2000
+      }
+    }
+  },
+  "uiSettings": {
+    "dashboardCollapsed": false
+  },
+  "incomeClock": {
+    "source": "salary",
+    "monthlyIncome": 15000,
+    "paidDays": 21.75,
+    "start": "09:00",
+    "end": "18:00",
+    "breakEnabled": true,
+    "breakStart": "12:00",
+    "breakEnd": "13:00",
+    "workdays": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "goal": 30
+  },
+  "projectStorage": {
+    "enabled": true,
+    "updatedAt": "2026-10-23T15:18:36.231Z"
+  }
+}

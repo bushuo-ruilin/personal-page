@@ -1,1 +1,11 @@
-{"name":"salary-calc","version":"1.0.0","private":true,"description":"知薪 · 薪资与五险一金测算","scripts":{"dev":"node server.js","start":"node server.js","test":"node tests/calculator.test.js && node tests/calendar.test.js && node tests/mortgage.test.js && node tests/loans.test.js && node tests/income-clock.test.js"}}
+{
+  "name": "salary-calc",
+  "version": "1.0.0",
+  "private": true,
+  "description": "知薪 · 薪资与五险一金测算",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "test": "node tests/calculator.test.js && node tests/calendar.test.js && node tests/mortgage.test.js && node tests/loans.test.js && node tests/income-clock.test.js"
+  }
+}
